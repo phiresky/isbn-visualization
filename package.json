@@ -1,0 +1,54 @@
+{
+  "name": "vite-template-solid",
+  "version": "0.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7"
+  },
+  "dependencies": {
+    "@react-three/drei": "^9.121.2",
+    "@react-three/fiber": "9.0.0-rc.2",
+    "@types/bencode": "^2.0.4",
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.10.7",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "@types/three": "^0.172.0",
+    "@vitejs/plugin-react-swc": "^3.7.2",
+    "bencode": "^4.0.0",
+    "better-sqlite3": "^11.8.1",
+    "isbn3": "^1.2.6",
+    "jsbarcode": "^3.11.6",
+    "lru-cache": "^11.0.2",
+    "mobx": "^6.13.5",
+    "mobx-react-lite": "^4.1.0",
+    "mobx-utils": "^6.1.0",
+    "prando": "^6.0.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-select": "^5.9.0",
+    "sharp": "^0.33.5",
+    "simple-zstd": "^1.4.2",
+    "three": "^0.172.0",
+    "tsx": "^4.19.2",
+    "zlib": "^1.0.5"
+  },
+  "packageManager": "pnpm@10.0.0+sha512.b8fef5494bd3fe4cbd4edabd0745df2ee5be3e4b0b8b08fa643aa3e4c6702ccc0f00d68fa8a8c9858a735a0032485a44990ed2810526c875e416f001b17df12b",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@swc/core",
+      "better-sqlite3",
+      "esbuild",
+      "sharp"
+    ]
+  }
+}
