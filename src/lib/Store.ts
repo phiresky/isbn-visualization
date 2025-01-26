@@ -8,7 +8,7 @@ import { createTransformer } from "mobx-utils";
 import { Camera, OrthographicCamera, Vector3, Vector3Like } from "three";
 import config from "../config";
 import { DetailLevelObservable } from "./DetailLevelObservable";
-import { getTrajectoryReal2 } from "./flight";
+import { getTrajectoryReal2, plotSmartTrajectory, Point } from "./flight";
 import { GoogleBooksItem, googleBooksQueryIsbn } from "./google-books";
 import { ImageLoader } from "./ImageLoader";
 import { LazyPrefixInfo } from "./info-map";
@@ -332,8 +332,8 @@ export class Store {
     const origZoom = camera.zoom;
     const targetZoom = 15000;
     const maxZoom = 1; // maxZoom = distance 1. 1/2 * maxZoom = distance 2 => maxZoom/n = distance n;
-    const from = { x: orig.x, y: orig.y, z: maxZoom / camera.zoom };
-    const to = { x: targetX, y: targetY, z: maxZoom / targetZoom };
+    const from = new Point(orig.x, orig.y,maxZoom / camera.zoom);
+    const to = new Point(targetX, targetY, maxZoom / targetZoom);
     console.log("xyz space", {
       from,
       to,
@@ -346,36 +346,18 @@ export class Store {
       this.orbitControls.target.y = camera.position.y;
       camera.updateProjectionMatrix();
     };
-    const trajectory = getTrajectoryReal2(from, to);
+    const trajectory = plotSmartTrajectory(from, to);
     console.log("trajectory xyz", trajectory);
     // lerp each segment in trajectory using it's given length
     const timeScale = 4;
-    const start2 = performance.now() / timeScale;
-    let curSegment = 1;
-    let curTOffset = 0;
+    const start = performance.now() / timeScale;
     const animate = () => {
       const now = performance.now() / timeScale;
-      let elapsed = now - start2 - curTOffset;
-      while (elapsed > trajectory[curSegment].t) {
-        curTOffset += trajectory[curSegment].t;
-        curSegment++;
-        elapsed = now - start2 - curTOffset;
-        if (curSegment >= trajectory.length) {
-          setPosition(to);
-          return;
-        }
+      const time = now - start;
+      setPosition(trajectory.position(time));
+      if (time < trajectory.duration) {
+        this.animationRequestId = requestAnimationFrame(animate);
       }
-
-      const segment = trajectory[curSegment];
-      const lastSegment = trajectory[curSegment - 1];
-      const progress = elapsed / segment.t;
-      const position = {
-        x: lastSegment.x + (segment.x - lastSegment.x) * progress,
-        y: lastSegment.y + (segment.y - lastSegment.y) * progress,
-        z: lastSegment.z + (segment.z - lastSegment.z) * progress,
-      };
-      setPosition(position);
-      this.animationRequestId = requestAnimationFrame(animate);
     };
     animate();
   }
