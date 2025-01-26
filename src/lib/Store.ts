@@ -8,7 +8,7 @@ import { createTransformer } from "mobx-utils";
 import { Camera, OrthographicCamera, Vector3, Vector3Like } from "three";
 import config from "../config";
 import { DetailLevelObservable } from "./DetailLevelObservable";
-import { getTrajectoryReal2, plotSmartTrajectory, Point } from "./flight";
+import { getTrajectoryReal2, plotSmartTrajectory, Point3D } from "./flight";
 import { GoogleBooksItem, googleBooksQueryIsbn } from "./google-books";
 import { ImageLoader } from "./ImageLoader";
 import { LazyPrefixInfo } from "./info-map";
@@ -213,10 +213,10 @@ export class Store {
     let copy = 1;
     while (this.inProgress.has(id)) id = _id + " " + ++copy;
     runInAction(() => this.inProgress.set(id, null));
-    console.time(id);
+    //console.time(id);
     p.then(() => {
       this.inProgress.delete(id);
-      console.timeEnd(id);
+      //console.timeEnd(id);
     });
     p.catch((e) => {
       this.inProgress.set(id, e);
@@ -332,8 +332,8 @@ export class Store {
     const origZoom = camera.zoom;
     const targetZoom = 15000;
     const maxZoom = 1; // maxZoom = distance 1. 1/2 * maxZoom = distance 2 => maxZoom/n = distance n;
-    const from = new Point(orig.x, orig.y,maxZoom / camera.zoom);
-    const to = new Point(targetX, targetY, maxZoom / targetZoom);
+    const from = new Point3D(orig.x, orig.y, maxZoom / camera.zoom);
+    const to = new Point3D(targetX, targetY, maxZoom / targetZoom);
     console.log("xyz space", {
       from,
       to,
@@ -346,10 +346,11 @@ export class Store {
       this.orbitControls.target.y = camera.position.y;
       camera.updateProjectionMatrix();
     };
+    //const trajectory = getTrajectoryReal2(from, to);
     const trajectory = plotSmartTrajectory(from, to);
     console.log("trajectory xyz", trajectory);
     // lerp each segment in trajectory using it's given length
-    const timeScale = 4;
+    const timeScale = 3;
     const start = performance.now() / timeScale;
     const animate = () => {
       const now = performance.now() / timeScale;
