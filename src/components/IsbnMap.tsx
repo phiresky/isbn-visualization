@@ -120,6 +120,8 @@ export const IsbnMap: React.FC<{ config: ProjectionConfig }> = observer(
               const x = e.point.x + props.config.pixelWidth / 2;
               const y = props.config.pixelHeight / 2 - e.point.y;
               if (isPointerDown === 2) {
+                if ((e.nativeEvent.target as Element)?.tagName !== "CANVAS")
+                  return;
                 store.updateStats(x, y, "end");
               }
               if (isPointerDown === -1 && e.pointerType === "mouse") {

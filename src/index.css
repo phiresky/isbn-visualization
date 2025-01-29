@@ -6,6 +6,9 @@ body {
   margin: 0;
   font-family: system-ui, sans-serif;
 }
+* {
+  box-sizing: border-box;
+}
 #root {
   width: 100%;
   height: 100%;
@@ -30,6 +33,7 @@ code {
   padding: 1em;
   z-index: 100;
   width: 400px;
+  max-width: 100vw;
   box-shadow: 0 0 4px 4px black;
   /* max-height: 50vh; */
 }
