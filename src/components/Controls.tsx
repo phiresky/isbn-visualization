@@ -136,6 +136,8 @@ const MainStuff: React.FC<{ store: Store }> = observer(function MainStuff({
           placeholder="Click for examples..."
           getOptionLabel={(e) => e.volumeInfo.title ?? "?"}
           getOptionValue={(e) => e.id}
+          blurInputOnSelect={true}
+          closeMenuOnSelect={true}
           onChange={(e) => {
             console.log("found book", e);
             const isbn13 = e?.volumeInfo.industryIdentifiers?.find(

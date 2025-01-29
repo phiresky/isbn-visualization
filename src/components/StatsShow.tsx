@@ -148,7 +148,7 @@ function StatsSummary(props: {
   if (!r.dataset_all) return <></>;
   return (
     <div>
-      Stats for {props.prefixStart}
+      Stats for <b>{props.prefixStart}</b>
       {props.prefixStart !== props.prefixEnd ? <> to {props.prefixEnd}</> : ""}:
       <br />
       <b>Known books:</b> {r.dataset_all?.toLocaleString()}

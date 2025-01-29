@@ -139,7 +139,7 @@ const IsbnInfo = observer(function IsbnInfo(props: { store: Store }) {
             <>
               {o.rarity.holdingCount === 255 ? ">250" : o.rarity.holdingCount}{" "}
               known libraries hold copies of{" "}
-              {o.rarity.editionCount === 255 ? ">250" : o.rarity.editionCount}{" "}
+              {o.rarity.editionCount >= 254 ? ">250" : o.rarity.editionCount}{" "}
               editions of this book
             </>
           ))}
