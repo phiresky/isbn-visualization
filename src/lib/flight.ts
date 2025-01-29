@@ -193,7 +193,6 @@ function calculateTrajectory(x1: number, y1: number, x2: number, y2: number) {
   return { a, b, c };
 }
 
-
 /**
  * Takes another trajectory and interplolates the time spend on the curve segments depending on the zoom level
  * It also calculates the total duration of the trajectory according to the distance of the whole trajectory
@@ -212,42 +211,53 @@ class TimeInterpolatingTrajectory implements Trajectory {
     function dist(p1: Point3D, p2: Point3D) {
       const dx = p1.x - p2.x;
       const dy = p1.y - p2.y;
-      const dz = (Math.log10(1 + 1 / p1.z * 2) - Math.log10(1 + 1 / p2.z * 2)) * 5;
+      const zScale = 8;
+      const dz =
+        (Math.log10(1 + (1 / p1.z) * zScale) -
+          Math.log10(1 + (1 / p2.z) * zScale)) *
+        zScale;
       return Math.sqrt(dx * dx + dy * dy + dz * dz);
     }
 
     function duration(p: Point3D) {
-      const dur = Math.log10(1 + 1 / p.z / 4);
+      const dur = Math.log10(1 + 1 / p.z / 8);
+      console.log(p, dur);
       console.assert(dur >= 0, "duration should be positive");
       return dur;
     }
 
-    function add(from: number, fromP: Point3D, to: number, toP: Point3D, depth: number) {
+    function add(
+      from: number,
+      fromP: Point3D,
+      to: number,
+      toP: Point3D,
+      depth: number
+    ) {
       const distance = dist(fromP, toP);
 
       const middle = from + (to - from) / 2;
       const middleP = inner.position(middle);
       const eps = 0.0000001;
-      const isLineOnZ = Math.abs(fromP.z - toP.z) < eps && Math.abs(fromP.z - middleP.z) < eps;
+      const isLineOnZ =
+        Math.abs(fromP.z - toP.z) < eps && Math.abs(fromP.z - middleP.z) < eps;
 
       if (distance <= 2 || isLineOnZ || depth > 400) {
         totalDistance += distance;
         return;
       }
 
-
       add(from, fromP, middle, middleP, depth + 1);
       points.push(middleP);
       add(middle, middleP, to, toP, depth + 1);
     }
 
-    const start = 0
+    const start = 0;
     const startP = inner.position(start);
     const end = inner.duration;
     const endP = inner.position(end);
 
     //console.log("create TimeInterpolatingTrajectory", { startP, endP, start, end });
-    
+
     points.push(startP);
 
     add(start, startP, end, endP, 0);
@@ -260,7 +270,10 @@ class TimeInterpolatingTrajectory implements Trajectory {
     const minDuration = 100;
     const targetDuration = totalDistance * 20;
     //console.log("dist-and-dist", { totalDistance, targetDuration });
-    this.duration = Math.max(minDuration, Math.min(targetDuration, maxDuration));
+    this.duration = Math.max(
+      minDuration,
+      Math.min(targetDuration, maxDuration)
+    );
 
     // create durations
     const durations: number[] = [];
@@ -270,12 +283,11 @@ class TimeInterpolatingTrajectory implements Trajectory {
       const dur = (duration(p1) + duration(p2)) / 2;
       durations.push(dur * dist(p1, p2));
     }
-    
 
     // normalize durations
     const totalDuration = durations.reduce((sum, d) => sum + d, 0);
     for (let i = 0; i < durations.length; i++) {
-      durations[i] = durations[i] * this.duration / totalDuration;
+      durations[i] = (durations[i] * this.duration) / totalDuration;
     }
 
     this.points = points;
@@ -283,7 +295,6 @@ class TimeInterpolatingTrajectory implements Trajectory {
   }
 
   position(t: number): Point3D {
-    
     while (true) {
       const rest = t - this.offsetTime;
       const p1 = this.points[this.offsetIndex];
@@ -307,7 +318,7 @@ class TimeInterpolatingTrajectory implements Trajectory {
 }
 
 /*
-  A trajectory that moves lineray in blub space and makes something between a parabel and a circle in real space
+  A trajectory that moves linearly in blub space and makes something between a parable and a circle in real space
 */
 class DirectBlubSpaceTrajectory implements Trajectory {
   constructor(
@@ -316,7 +327,7 @@ class DirectBlubSpaceTrajectory implements Trajectory {
     public origin: Point3D,
     public target: Point3D,
     public xyDirection: Point3D,
-    public duration: number,
+    public duration: number
   ) {}
 
   position(t: number): Point3D {
@@ -344,15 +355,19 @@ class DirectBlubSpaceTrajectory implements Trajectory {
           return self.origin;
         }
         return self.position(self.duration - t);
-      }
-    }
+      },
+    };
   }
 }
 
 // A trajectory that moves on a line from origin to target in real space
 class RealSpaceTrajectory implements Trajectory {
   direct: Point3D;
-  constructor(private origin: Point3D, private target: Point3D, public duration: number) {
+  constructor(
+    private origin: Point3D,
+    private target: Point3D,
+    public duration: number
+  ) {
     this.direct = target.minus(origin);
   }
 
@@ -395,7 +410,9 @@ class CompositeTrajectory implements Trajectory {
       }
       rest -= trajectory.duration;
     }
-    return this.trajectories[this.trajectories.length - 1].position(this.trajectories[this.trajectories.length - 1].duration);
+    return this.trajectories[this.trajectories.length - 1].position(
+      this.trajectories[this.trajectories.length - 1].duration
+    );
   }
 }
 
@@ -407,7 +424,9 @@ export function plotSmartTrajectory(
   origin: Point3D,
   target: Point3D
 ): Trajectory {
-  return new TimeInterpolatingTrajectory(plotSmartTrajectoryInner(origin, target));
+  return new TimeInterpolatingTrajectory(
+    plotSmartTrajectoryInner(origin, target)
+  );
 }
 
 function plotSmartTrajectoryInner(
@@ -436,35 +455,76 @@ function plotSmartTrajectoryInner(
   function makeIndirectTrajectory(): Trajectory {
     //console.assert(origin.z <= targetMinZoom)
     //console.assert(target.z <= targetMinZoom);
-    const zoomOutTrajectory = makeFullZoomOutTrajectory(origin, xyDirection, 1/3, targetMinZoom);
-    const zoomInTrajectory = makeFullZoomOutTrajectory(target, xyDirection.neg(), 1/3, targetMinZoom).reverse();
-    const topLevelZoomTrajectory = new RealSpaceTrajectory(zoomOutTrajectory.target, zoomInTrajectory.origin, 1/3);
+    const zoomOutTrajectory = makeFullZoomOutTrajectory(
+      origin,
+      xyDirection,
+      1 / 3,
+      targetMinZoom
+    );
+    const zoomInTrajectory = makeFullZoomOutTrajectory(
+      target,
+      xyDirection.neg(),
+      1 / 3,
+      targetMinZoom
+    ).reverse();
+    const topLevelZoomTrajectory = new RealSpaceTrajectory(
+      zoomOutTrajectory.target,
+      zoomInTrajectory.origin,
+      1 / 10
+    );
     //console.log("makeIndirectTrajectory", { zoomOutTrajectory, topLevelZoomTrajectory, zoomInTrajectory });
-    return new CompositeTrajectory([zoomOutTrajectory, topLevelZoomTrajectory, zoomInTrajectory]);
+    return new CompositeTrajectory([
+      zoomOutTrajectory,
+      topLevelZoomTrajectory,
+      zoomInTrajectory,
+    ]);
   }
 
   // first check if we can project the flight path into a blub space segment (aka a half circle)
   if (xyDistance < segmentSize) {
     const start = toBlubSpace(0, origin.z, segmentSize);
     const end = toBlubSpace(xyDistance, target.z, segmentSize);
-    
+
     if (origin.z <= targetMinZoom && target.z <= targetMinZoom) {
       // if we are not already zoomed out more than targetMinZoom
       // check whether the line intersects the targetMinZoom circle
       // otherwise we would zoom out more than targetMinZoom
-      if (lineIntersectsCircle(start, end, new Point2D(0, 0), zoomToBlubRadius(targetMinZoom))) {
+      if (
+        lineIntersectsCircle(
+          start,
+          end,
+          new Point2D(0, 0),
+          zoomToBlubRadius(targetMinZoom)
+        )
+      ) {
         // if the line intersects the targetMinZoom circle, we need to zoom out to targetMinZoom and then do a full zoom in
         return makeIndirectTrajectory();
       }
     }
 
     //console.log("plotSmartTrajectory", { start, end });
-    return new DirectBlubSpaceTrajectory(start, end, origin, target, xyDirection, 1);
+    return new DirectBlubSpaceTrajectory(
+      start,
+      end,
+      origin,
+      target,
+      xyDirection,
+      1
+    );
   } else if (origin.z > targetMinZoom) {
     // if we are zoomed out more than the targetMinZoom,
     // don't zoom out at all, just move at the current zoom level and then zoom in
-    const zoomInTrajectory = makeFullZoomOutTrajectory(target, xyDirection.neg(), 1 / 2, origin.z).reverse();
-    const topLevelZoomTrajectory = new RealSpaceTrajectory(origin, zoomInTrajectory.origin, 1 / 2);
+    const zoomInTrajectory = makeFullZoomOutTrajectory(
+      target,
+      xyDirection.neg(),
+      1 / 2,
+      origin.z
+    ).reverse();
+    const topLevelZoomTrajectory = new RealSpaceTrajectory(
+      origin,
+      zoomInTrajectory.origin,
+      1 / 2
+    );
     //console.log("onlyZoomIn", { topLevelZoomTrajectory, zoomInTrajectory });
     return new CompositeTrajectory([topLevelZoomTrajectory, zoomInTrajectory]);
   } else {
@@ -475,41 +535,67 @@ function plotSmartTrajectoryInner(
 /**
  * Checks whether the line between p1 and p2 intersects a circle with center circle and radius radius
  */
-function lineIntersectsCircle(p1: Point2D, p2: Point2D, circle: Point2D, radius: number) {
+function lineIntersectsCircle(
+  p1: Point2D,
+  p2: Point2D,
+  circle: Point2D,
+  radius: number
+) {
   // no idea whats going on here... it's adapted from the INTERNET!
   const v1 = {
     x: p2.x - p1.x,
-    y: p2.y - p1.y
+    y: p2.y - p1.y,
   };
   const v2 = {
     x: p1.x - circle.x,
-    y: p1.y - circle.y
+    y: p1.y - circle.y,
   };
   const b = -2 * (v1.x * v2.x + v1.y * v2.y);
   const c = 2 * (v1.x * v1.x + v1.y * v1.y);
-  const d = Math.sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - radius * radius));
-  if(isNaN(d)){ // no intercept
+  const d = Math.sqrt(
+    b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - radius * radius)
+  );
+  if (isNaN(d)) {
+    // no intercept
     false;
   }
-  const u1 = (b - d) / c;  // these represent the unit distance of point one and two on the line
-  const u2 = (b + d) / c;    
-  return (u1 <= 1 && u1 >= 0) || (u2 <= 1 && u2 >= 0)
+  const u1 = (b - d) / c; // these represent the unit distance of point one and two on the line
+  const u2 = (b + d) / c;
+  return (u1 <= 1 && u1 >= 0) || (u2 <= 1 && u2 >= 0);
 }
 
 /**
  * Creates a trajectory that zooms out from origin to the targetZoom level in the xy direction
  * Because it moves to the tangent of the targetZoom circle in blub space, it makes a nice approaching curve in real space
  */
-function makeFullZoomOutTrajectory(origin: Point3D, xyDirection: Point3D, duration: number, targetZoom: number): DirectBlubSpaceTrajectory {
+function makeFullZoomOutTrajectory(
+  origin: Point3D,
+  xyDirection: Point3D,
+  duration: number,
+  targetZoom: number
+): DirectBlubSpaceTrajectory {
   const zoomOutStart = toBlubSpace(0, origin.z, segmentSize);
-  const zoomOutEnd = circleTangentPointFrom0Origin(zoomOutStart, zoomToBlubRadius(targetZoom));
-  const { dist: zoomOutEndDist, zoom: zoomOutEndZoom } = fromBlubSpace(zoomOutEnd, segmentSize);
+  const zoomOutEnd = circleTangentPointFrom0Origin(
+    zoomOutStart,
+    zoomToBlubRadius(targetZoom)
+  );
+  const { dist: zoomOutEndDist, zoom: zoomOutEndZoom } = fromBlubSpace(
+    zoomOutEnd,
+    segmentSize
+  );
   const zoomOutEndInReal = origin.plus(xyDirection.mul(zoomOutEndDist));
   zoomOutEndInReal.z = zoomOutEndZoom;
 
   //console.log("makeFullZoomOutTrajectory", { origin, zoomOutStart, zoomOutEnd, zoomOutEndInReal });
 
-  return new DirectBlubSpaceTrajectory(zoomOutStart, zoomOutEnd, origin, zoomOutEndInReal, xyDirection, duration);
+  return new DirectBlubSpaceTrajectory(
+    zoomOutStart,
+    zoomOutEnd,
+    origin,
+    zoomOutEndInReal,
+    xyDirection,
+    duration
+  );
 }
 
 /**
@@ -520,7 +606,7 @@ function circleTangentPointFrom0Origin(p: Point2D, radius: number): Point2D {
   const zoomOutAngle = Math.acos(radius / startRadius);
   return new Point2D(
     Math.cos(zoomOutAngle) * radius,
-    Math.sin(zoomOutAngle) * radius,
+    Math.sin(zoomOutAngle) * radius
   );
 }
 

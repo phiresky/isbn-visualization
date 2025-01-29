@@ -8,7 +8,7 @@ import { createTransformer } from "mobx-utils";
 import { Camera, OrthographicCamera, Vector3, Vector3Like } from "three";
 import config from "../config";
 import { DetailLevelObservable } from "./DetailLevelObservable";
-import { getTrajectoryReal2, plotSmartTrajectory, Point3D } from "./flight";
+import { plotSmartTrajectory, Point3D } from "./flight";
 import { GoogleBooksItem, googleBooksQueryIsbn } from "./google-books";
 import { ImageLoader } from "./ImageLoader";
 import { LazyPrefixInfo } from "./info-map";
@@ -350,7 +350,7 @@ export class Store {
     const trajectory = plotSmartTrajectory(from, to);
     console.log("trajectory xyz", trajectory);
     // lerp each segment in trajectory using it's given length
-    const timeScale = 3;
+    const timeScale = 8;
     const start = performance.now() / timeScale;
     const animate = () => {
       const now = performance.now() / timeScale;
