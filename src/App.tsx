@@ -1,6 +1,6 @@
 import { useMemo, type FC } from "react";
 
-import { IsbnView } from "./components/IsbnView";
+import { IsbnMap } from "./components/IsbnMap";
 import { bookshelfConfig } from "./projections/bookshelf";
 
 const App: FC = () => {
@@ -15,7 +15,7 @@ const App: FC = () => {
       }),
     []
   );
-  return <IsbnView config={config} />;
+  return <IsbnMap config={config} />;
 };
 
 export default App;

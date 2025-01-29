@@ -25,7 +25,7 @@ let pointerMoved = 0;
 let isPointerDown = -1;
 let cancelHighlight = false;
 
-export const IsbnView: React.FC<{ config: ProjectionConfig }> = observer(
+export const IsbnMap: React.FC<{ config: ProjectionConfig }> = observer(
   function IsbnView(props: { config: ProjectionConfig }) {
     const [store] = useState(() => new Store(props.config));
     Object.assign(window, { store });

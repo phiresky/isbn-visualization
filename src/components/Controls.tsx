@@ -114,7 +114,10 @@ const MainStuff: React.FC<{ store: Store }> = observer(function MainStuff({
 }) {
   return (
     <>
-      <p>Drag/Zoom like a map. Tap to show details of an ISBN!</p>
+      <p>
+        Drag/Zoom like a map. Tap to show details of an ISBN! Right-click-drag
+        to show stats.
+      </p>
       <label>
         Search for a book via Google Books:
         <AsyncSelect<MinimalGoogleBooksItem>
