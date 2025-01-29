@@ -20,8 +20,18 @@ export type RuntimeConfiguration = {
 };
 
 const defaultDataset = "publication_date";
+function isMobile() {
+  const minWidth = 768; // Minimum width for desktop devices
+  return window.innerWidth < minWidth || screen.width < minWidth;
+}
 export function defaultRuntimeConfig(dataset: string): RuntimeConfiguration {
   const ds = config.datasetOptions.find((d) => d.id === dataset);
+  // on mobile, defaults for performance
+  const mobile = {
+    textMinZoomLevel: 0.12,
+    textLevelCount: 1.66,
+    imgMinZoomLevel: 1.8,
+  };
   return {
     dataset,
     doBookshelfEffect: true,
@@ -31,7 +41,7 @@ export function defaultRuntimeConfig(dataset: string): RuntimeConfiguration {
     showPublisherNames: true,
     showGrid: true,
     publishersColorSchema: "hsl",
-    textMinZoomLevel: 0.08,
+    textMinZoomLevel: 0.09,
     textLevelCount: 2,
     imgMinZoomLevel: 1.2,
     customShader: "",
@@ -39,6 +49,7 @@ export function defaultRuntimeConfig(dataset: string): RuntimeConfiguration {
     filterMinimumPublicationYear: -1,
     filterMaximumPublicationYear: -1,
     colorGradient: 6,
+    ...(isMobile() ? mobile : {}),
     ...ds?.runtimeConfig,
   };
 }

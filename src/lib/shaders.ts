@@ -43,10 +43,12 @@ out vec4 fragColor;
 ivec4 getOrigRGB(vec4 c) {
   return ivec4(c * 255.0);
 }
+// less random but reproducible in JS
 float rand(vec2 co){
      // return fract(sin(dot(co, vec2(12.9898, 78.233)))); // fract(length(co) / 1000.0));
     return fract(sin(dot(co, vec2(12.9898, 78.233))) * 2.);
 }
+// more random
 highp float rand2(vec2 co) {
     highp float a = 12.9898;
     highp float b = 78.233;
@@ -56,16 +58,10 @@ highp float rand2(vec2 co) {
     return fract(sin(sn) * c);
 }
 
-// Additional utility functions for book decoration
-float hash(vec2 p) {
-    float h = dot(p, vec2(127.1, 311.7));
-    return fract(sin(h) * 43758.5453123);
-}
-
 float getBookDecoration(vec2 positionWithinPixel, vec2 bookIndex) {
-    float pattern = hash(bookIndex * 2.3);
-    float patternScale = 3.0 + hash(bookIndex * 3.7) * 6.0; // Random scale between 4 and 12
-    float pattern2 = hash(bookIndex * 5.1); // Second pattern selector
+    float pattern = rand2(bookIndex * 2.3);
+    float patternScale = 3.0 + rand2(bookIndex * 3.7) * 6.0; // Random scale between 4 and 12
+    float pattern2 = rand2(bookIndex * 5.1); // Second pattern selector
     float decoration = 0.0;
 
     if (positionWithinPixel.y < 0.23) return 0.0;
@@ -82,7 +78,7 @@ float getBookDecoration(vec2 positionWithinPixel, vec2 bookIndex) {
     } else if (pattern < 0.75) {
         // Dots with varying size and spacing
         vec2 dotUV = fract(patternUV * patternScale) - 0.5;
-        float dotSize = 0.15 + hash(bookIndex * 7.3) * 0.2;
+        float dotSize = 0.15 + rand2(bookIndex * 7.3) * 0.2;
         decoration = 1.0 - smoothstep(dotSize, dotSize + 0.05, length(dotUV));
     } else {
         // Mixed pattern based on second random value
@@ -93,7 +89,7 @@ float getBookDecoration(vec2 positionWithinPixel, vec2 bookIndex) {
         } else if (pattern2 < 0.66) {
             // Diamond pattern with varying size
             vec2 diamondUV = fract(patternUV * patternScale) - 0.5;
-            float diamondSize = 0.2 + hash(bookIndex * 9.1) * 0.3;
+            float diamondSize = 0.2 + rand2(bookIndex * 9.1) * 0.3;
             decoration = 1.0 - smoothstep(diamondSize, diamondSize + 0.05, abs(diamondUV.x) + abs(diamondUV.y));
         } else {
             // Crosshatch

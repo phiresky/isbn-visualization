@@ -1,7 +1,8 @@
 import { observer, useLocalObservable } from "mobx-react-lite";
-import React from "react";
+import React, { useRef } from "react";
 import { OptionProps, components } from "react-select";
 import AsyncSelect from "react-select/async";
+import Select from "react-select/base";
 import { default as config, default as staticConfig } from "../config";
 import { GoogleBooksItem, googleBooksQuery } from "../lib/google-books";
 import { Store } from "../lib/Store";
@@ -112,6 +113,7 @@ export type MinimalGoogleBooksItem = {
 const MainStuff: React.FC<{ store: Store }> = observer(function MainStuff({
   store,
 }) {
+  const selectRef = useRef<Select<MinimalGoogleBooksItem>>(null);
   return (
     <>
       <p>
@@ -122,6 +124,7 @@ const MainStuff: React.FC<{ store: Store }> = observer(function MainStuff({
         Search for a book via Google Books:
         <AsyncSelect<MinimalGoogleBooksItem>
           store={store}
+          ref={selectRef}
           loadOptions={async (e) => {
             const options = await googleBooksQuery(e);
             return options.filter(
@@ -136,8 +139,7 @@ const MainStuff: React.FC<{ store: Store }> = observer(function MainStuff({
           placeholder="Click for examples..."
           getOptionLabel={(e) => e.volumeInfo.title ?? "?"}
           getOptionValue={(e) => e.id}
-          blurInputOnSelect={true}
-          closeMenuOnSelect={true}
+          // blurInputOnSelect={true} not working
           onChange={(e) => {
             console.log("found book", e);
             const isbn13 = e?.volumeInfo.industryIdentifiers?.find(
@@ -146,6 +148,11 @@ const MainStuff: React.FC<{ store: Store }> = observer(function MainStuff({
             if (!isbn13) throw Error("no isbn13");
             store.updateHighlightedIsbn(isbn13);
             store.zoomAnimateToHighlight();
+            setTimeout(() => {
+              // hack to hide keyboard on mobile
+              selectRef.current?.blur();
+              selectRef.current?.blurInput();
+            }, 100);
           }}
           components={{ Option: BookOption }}
         />
