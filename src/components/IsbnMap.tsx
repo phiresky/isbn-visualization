@@ -17,6 +17,7 @@ import { Controls } from "./Controls";
 import { HighlightShow, PublisherHighlightShow } from "./Highlight";
 import { ImageTree } from "./ImageTree";
 import { IsbnGrid } from "./IsbnGrid";
+import { MiniMap } from "./MiniMap";
 import { StatsShow } from "./StatsShow";
 import { TextTree } from "./TextTree";
 Object.assign(window, { isbnlib });
@@ -178,6 +179,7 @@ export const IsbnMap: React.FC<{ config: ProjectionConfig }> = observer(
           </group>
         </Canvas>
         <Controls store={store} />
+        <MiniMap store={store} />
       </>
     );
   }

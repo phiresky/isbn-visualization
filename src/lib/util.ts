@@ -38,6 +38,13 @@ export function isbnPrefixToRelative(
 ): IsbnPrefixRelative {
   return prefix.replace(/^978/, "0").replace(/^979/, "1") as IsbnPrefixRelative;
 }
+export function isbnPrefixFromRelative(
+  prefix: IsbnPrefixRelative
+): IsbnPrefixWithoutDashes {
+  return prefix
+    .replace(/^0/, "978")
+    .replace(/^1/, "979") as IsbnPrefixWithoutDashes;
+}
 export function isbnToRelative(isbn: Isbn13Number): IsbnRelative {
   return (isbn - isbnEANStart) as IsbnRelative;
 }

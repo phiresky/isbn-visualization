@@ -322,15 +322,24 @@ export class Store {
     const { x, y, width, height } = this.projection.relativeIsbnToCoords(
       this.highlightedIsbn.relative
     );
-    const targetX = x + width / 2 - this.projection.pixelWidth / 2;
-    const targetY = this.projection.pixelHeight / 2 - y - (height * 3) / 4;
+    const targetX = x + width / 2;
+    const targetY = y + (height * 3) / 4;
+    this.zoomAnimateTo(targetX, targetY, 14000, 8);
+  }
+  zoomAnimateTo(
+    targetX: number,
+    targetY: number,
+    targetZoom: number,
+    timeScale: number
+  ) {
+    targetX -= this.projection.pixelWidth / 2;
+    targetY = this.projection.pixelHeight / 2 - targetY;
     const camera = this.camera;
     if (!camera) return;
     const orbitControls = this.orbitControls;
     if (!orbitControls) return;
     const orig = { ...camera.position };
     const origZoom = camera.zoom;
-    const targetZoom = 14000;
     const maxZoom = 1; // maxZoom = distance 1. 1/2 * maxZoom = distance 2 => maxZoom/n = distance n;
     const from = new Point3D(orig.x, orig.y, maxZoom / camera.zoom);
     const to = new Point3D(targetX, targetY, maxZoom / targetZoom);
@@ -350,7 +359,6 @@ export class Store {
     const trajectory = plotSmartTrajectory(from, to);
     console.log("trajectory xyz", trajectory);
     // lerp each segment in trajectory using it's given length
-    const timeScale = 8;
     const start = performance.now() / timeScale;
     const animate = () => {
       const now = performance.now() / timeScale;
