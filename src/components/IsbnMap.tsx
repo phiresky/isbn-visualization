@@ -59,10 +59,15 @@ export const IsbnMap: React.FC<{ config: ProjectionConfig }> = observer(
               store.shaderError = err;
             };
           }}
+          scene={{ background: new THREE.Color("#1d2636") }}
           gl={{ toneMapping: NoToneMapping }}
           onPointerMove={(e) => {
             if (cancelHighlight) store.highlightedPublisher = null;
             else cancelHighlight = true;
+          }}
+          onWheel={(e) => {
+            // cancel flight on scroll
+            cancelAnimationFrame(store.animationRequestId);
           }}
         >
           <OrthographicCamera makeDefault position={[0, 0, 100]} />

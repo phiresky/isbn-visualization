@@ -16,8 +16,9 @@ export type ColorSchemeMeaning = {
 export const defaultColorSchemeMeaning = {
   title: "Books",
   markers: [
-    { value: 0, label: "No books" },
-    { value: 1, label: "Many books" },
+    { value: 0, label: "0%" },
+    { value: 0.5, label: "50% allocated" },
+    { value: 1, label: "100%" },
   ],
 };
 export default {

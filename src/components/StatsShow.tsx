@@ -14,6 +14,7 @@ import {
 } from "../lib/util";
 import { getPlanePosition } from "../lib/view-utils";
 
+export const maxZoomForStats = 40;
 export const StatsShow: React.FC<{ store: Store }> = observer(
   function StatsShow({ store }) {
     const material = useMemo(
@@ -59,6 +60,16 @@ export const StatsShow: React.FC<{ store: Store }> = observer(
     return (
       <group position={[plane.position[0], plane.position[1], 2]}>
         <Plane args={[plane.width, plane.height]} material={material} />
+        {store.floatZoomFactor > maxZoomForStats && (
+          <Html zIndexRange={[21, 21]}>
+            <div
+              className="stats-highlight"
+              style={{ transform: "translate(-50%, -50%)" }}
+            >
+              Zoom out to view stats
+            </div>
+          </Html>
+        )}
         <Html
           zIndexRange={[23, 23]}
           position={[plane.width / 2, -plane.height / 2, 3]}
@@ -105,6 +116,7 @@ export const StatsShow: React.FC<{ store: Store }> = observer(
                       </tbody>
                     </table>
                   </details>
+                  <small>Right click to close</small>
                 </>
               ),
             })}

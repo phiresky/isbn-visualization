@@ -1,17 +1,19 @@
 import { Html } from "@react-three/drei";
+import { hyphenate } from "isbn3";
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { LazyPrefixInfo } from "../lib/info-map";
 import { Store } from "../lib/Store";
 import { relativeToFullIsbn, removeDashes, siNumber } from "../lib/util";
 import { getPlanePosition } from "../lib/view-utils";
-import { AbbrevStats } from "./StatsShow";
+import { AbbrevStats, maxZoomForStats } from "./StatsShow";
 
 export const PublisherHighlightShow: React.FC<{ store: Store }> = observer(
   function PublisherHighlightShow({ store }) {
     if (store.highlightedIsbn.type === "done") return null;
     if (!store.highlightedPublisher) return null;
     const isbn = store.highlightedPublisher.relative;
+    const isbnFull = relativeToFullIsbn(isbn);
     const loc = getPlanePosition(store.projection, isbn, isbn);
     const publisher = store.highlightedPublisher.data?.[1]?.info?.[0];
     return (
@@ -25,6 +27,8 @@ export const PublisherHighlightShow: React.FC<{ store: Store }> = observer(
               // wrapperClass="highlight-wrapper"
             >
               <div className="isbn-highlight">
+                ISBN {hyphenate(isbnFull) || isbnFull}
+                <br />
                 {(store.highlightedPublisher.data &&
                   store.highlightedPublisher.obj && (
                     <GroupInfo
@@ -41,6 +45,10 @@ export const PublisherHighlightShow: React.FC<{ store: Store }> = observer(
                   />
                 )}
                 <b>Click to show book details</b>
+                <br />
+                {store.floatZoomFactor < maxZoomForStats && (
+                  <small>Right-click-drag to show region stats</small>
+                )}
               </div>
             </Html>
           </group>

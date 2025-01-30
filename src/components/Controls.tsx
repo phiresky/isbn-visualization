@@ -1,3 +1,4 @@
+import isbnlib from "isbn3";
 import { observer, useLocalObservable } from "mobx-react-lite";
 import React, { useRef } from "react";
 import { OptionProps, components } from "react-select";
@@ -6,6 +7,7 @@ import Select from "react-select/base";
 import { default as config, default as staticConfig } from "../config";
 import { GoogleBooksItem, googleBooksQuery } from "../lib/google-books";
 import { Store } from "../lib/Store";
+import { IsbnStrWithChecksum } from "../lib/util";
 import { Legend } from "./Legend";
 
 export const Controls: React.FC<{ store: Store }> = observer(function Controls({
@@ -43,7 +45,6 @@ export const Controls: React.FC<{ store: Store }> = observer(function Controls({
           </button>
         )}
       </div>
-      <br />
       <Legend store={store} />
       {state.showSettings ? (
         <Settings store={store} />
@@ -58,16 +59,27 @@ export const Controls: React.FC<{ store: Store }> = observer(function Controls({
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "baseline",
+                marginTop: "0.5ex",
               }}
             >
-              <div>Choose a Preset</div>
+              <div>
+                Choose a Preset{" "}
+                <button
+                  onClick={() => {
+                    state.showSettings = !state.showSettings;
+                    state.showDatasetChooser = false;
+                  }}
+                >
+                  <small>⚙ {state.showSettings ? "Done" : "Advanced"}</small>
+                </button>
+              </div>
+
               <button
                 onClick={() => {
-                  state.showSettings = !state.showSettings;
                   state.showDatasetChooser = false;
                 }}
               >
-                <small>⚙ {state.showSettings ? "Done" : "Advanced"}</small>
+                <small>Close</small>
               </button>
             </h4>
             {staticConfig.datasetOptions.map((d) => (
@@ -121,11 +133,30 @@ const MainStuff: React.FC<{ store: Store }> = observer(function MainStuff({
         to show stats.
       </p>
       <label>
-        Search for a book via Google Books:
+        Search for a book via Google Books or ISBN:
         <AsyncSelect<MinimalGoogleBooksItem>
           store={store}
           ref={selectRef}
           loadOptions={async (e) => {
+            // if it's an isbn with 13 digits and maybe spaces, use that
+            const eAsNum = e.replace(/[^0-9]/g, "");
+            if (eAsNum.length === 13) {
+              return [
+                {
+                  id: `isbn-${e}`,
+                  volumeInfo: {
+                    title: isbnlib.hyphenate(eAsNum) ?? eAsNum,
+                    authors: ["Go to ISBN"],
+                    industryIdentifiers: [
+                      {
+                        type: "ISBN_13",
+                        identifier: eAsNum as IsbnStrWithChecksum,
+                      },
+                    ],
+                  },
+                },
+              ];
+            }
             const options = await googleBooksQuery(e);
             return options.filter(
               (e) =>
@@ -178,6 +209,7 @@ const Settings: React.FC<{ store: Store }> = observer(function Settings({
           <select
             value={config.dataset}
             onChange={(e) => (config.dataset = e.currentTarget.value)}
+            style={{ maxWidth: "200px" }}
           >
             {staticConfig.datasetOptions.map((d) => (
               <option key={d.id} value={d.id}>
