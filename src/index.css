@@ -132,7 +132,7 @@ code {
 
 .controls.advanced {
   max-height: 100vh;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .controls .form-row {
@@ -142,21 +142,6 @@ code {
 }
 .controls .form-row > div:first-child {
   flex: 1;
-}
-
-.stats-highlight,
-.isbn-highlight {
-  background: white;
-  box-shadow: 0 0 10px 0 black;
-  padding: 0.5rem;
-  max-height: 300px;
-  min-width: 300px;
-  overflow-y: scroll;
-}
-.isbn-highlight {
-  transform: translateX(-50%) translateY(10px);
-  width: 350px;
-  /* pointerEvents: "none", */
 }
 .stats-table {
   td:first-child {
@@ -317,4 +302,121 @@ code {
 .dataset-chooser button.choose-dataset {
   margin-bottom: 1em;
   width: 100%;
+}
+
+.isbn-highlight,
+.stats-highlight {
+  background: white;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 8px 24px;
+  border-radius: 8px;
+  padding: 1rem;
+  min-width: 320px;
+  max-width: 450px;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  max-height: 400px;
+  overflow-y: auto;
+}
+.isbn-highlight {
+  transform: translateX(-50%) translateY(10px);
+}
+
+.isbn-highlight h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: #111827;
+}
+
+.isbn-highlight .isbn-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.isbn-highlight .group-info {
+  margin: 0.75rem 0;
+  padding: 0.75rem 0;
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.isbn-highlight .stats-section {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 1rem;
+  margin: 0.75rem 0;
+}
+
+.isbn-highlight .stats-label {
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.isbn-highlight .stats-value {
+  color: #111827;
+}
+
+.isbn-highlight .instructions {
+  margin-top: 0.75rem;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.isbn-highlight small {
+  display: block;
+  margin-top: 0.25rem;
+  color: #6b7280;
+}
+
+.isbn-highlight button {
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  color: #374151;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.isbn-highlight button:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.isbn-highlight img {
+  margin: 0.5rem;
+  max-height: 80px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+}
+
+.isbn-highlight details {
+  margin-top: 0.75rem;
+}
+
+.isbn-highlight summary {
+  color: #4b5563;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.isbn-highlight ul {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.isbn-highlight li {
+  margin: 0.25rem 0;
+}
+
+.isbn-highlight a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.isbn-highlight a:hover {
+  text-decoration: underline;
 }
