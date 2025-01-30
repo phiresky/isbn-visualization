@@ -237,20 +237,33 @@ const MinimapSVG: React.FC<MinimapSVGProps> = ({
           };
           const widthRatio = overlay.width / WIDTH;
           return (
-            <rect
-              pointerEvents="none"
-              x={overlay.x}
-              y={overlay.y}
-              rx={5 * widthRatio}
-              width={overlay.width}
-              height={overlay.height}
-              fill={`rgba(255,255,255,${Math.max(
-                0,
-                Math.min(1, 1 - widthRatio)
-              )})`}
-              stroke="#fff"
-              strokeWidth="0.5"
-            />
+            <>
+              <rect
+                pointerEvents="none"
+                x={overlay.x}
+                y={overlay.y}
+                rx={5 * widthRatio}
+                width={overlay.width}
+                height={overlay.height}
+                fill={`rgba(255,255,255,${Math.max(
+                  0,
+                  Math.min(1, 1 - widthRatio)
+                )})`}
+                stroke="#fff"
+                strokeWidth="0.5"
+              />
+              {/* if very small, draw a white circle around the rect */}
+              {widthRatio < 0.02 && (
+                <circle
+                  cx={overlay.x + overlay.width / 2}
+                  cy={overlay.y + overlay.height / 2}
+                  r={3}
+                  fill="none"
+                  stroke="#fff"
+                  strokeWidth="0.5"
+                />
+              )}
+            </>
           );
         }}
       </Observer>
