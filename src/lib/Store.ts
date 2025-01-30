@@ -83,6 +83,7 @@ export class Store {
     prefixStart: IsbnPrefixWithoutDashes;
     prefixEnd: IsbnPrefixWithoutDashes;
   } | null = null;
+  resetZoomButton: boolean = false;
   shaderError = "";
   constructor(projectionConfig: ProjectionConfig) {
     this.projection = projectionConfig;
@@ -315,6 +316,7 @@ export class Store {
       width: +(maxX - minX).toFixed(8),
       height: +(maxY - minY).toFixed(8),
     };
+    this.resetZoomButton = true;
     Object.assign(this.view, view);
   }
   zoomAnimateToHighlight() {
@@ -324,7 +326,7 @@ export class Store {
     );
     const targetX = x + width / 2;
     const targetY = y + (height * 3) / 4;
-    this.zoomAnimateTo(targetX, targetY, 14000, 8);
+    this.zoomAnimateTo(targetX, targetY, 14000, 7);
   }
   zoomAnimateTo(
     targetX: number,

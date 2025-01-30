@@ -228,12 +228,17 @@ const MinimapSVG: React.FC<MinimapSVGProps> = ({
 
       <Observer>
         {() => {
-          const scale = store.projection.pixelWidth / 100;
+          const scale = store.projection.pixelWidth / WIDTH;
+          const fakeScale = 0.5;
+          const w = store.view.width / store.projection.pixelWidth;
           const overlay = {
-            x: store.view.minX / scale,
-            y: store.view.minY / scale,
-            width: store.view.width / scale,
-            height: store.view.height / scale,
+            x: store.view.minX / scale + fakeScale,
+            y: store.view.minY / scale + fakeScale,
+            width: Math.max(0.5, store.view.width / scale - w * fakeScale * 2),
+            height: Math.max(
+              0.5,
+              store.view.height / scale - w * fakeScale * 2
+            ),
           };
           const widthRatio = overlay.width / WIDTH;
           return (
@@ -297,6 +302,29 @@ export const MiniMap: React.FC<{ store: Store }> = observer(function MiniMap(
           );
         }}
       />
+      {props.store.resetZoomButton && (
+        <button
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: "50%",
+            transform: "translateX(-50%)",
+            marginBottom: "0.5ex",
+            cursor: "pointer",
+          }}
+          onClick={() => {
+            props.store.resetZoomButton = false;
+            props.store.zoomAnimateTo(
+              props.store.projection.pixelWidth / 2,
+              props.store.projection.pixelHeight / 2,
+              1,
+              1
+            );
+          }}
+        >
+          <small>Reset Zoom</small>
+        </button>
+      )}
     </div>
   );
 });
