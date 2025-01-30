@@ -94,7 +94,6 @@ export const Controls: React.FC<{ store: Store }> = observer(function Controls({
                   <b>{d.name}</b> [{d.id}]<br />
                   {d.description && <i>{d.description}</i>}
                 </button>
-                <br />
               </React.Fragment>
             ))}
           </div>

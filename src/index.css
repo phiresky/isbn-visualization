@@ -39,7 +39,6 @@ code {
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
   max-height: calc(100vh - 2rem);
-  backdrop-filter: blur(10px);
   border: 1px solid rgba(229, 231, 235, 0.5);
 }
 
@@ -309,6 +308,10 @@ code {
   overflow: auto;
   padding: 1em;
   box-shadow: 0 0 4px 4px black;
+  border-radius: 12px;
+}
+.dataset-chooser button {
+  display: inline-block;
 }
 
 .dataset-chooser button.choose-dataset {
