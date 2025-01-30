@@ -7,7 +7,7 @@ import {
 import { Canvas, ThreeEvent } from "@react-three/fiber";
 import * as isbnlib from "isbn3";
 import { observer } from "mobx-react-lite";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import * as THREE from "three";
 import { MeshStandardMaterial, NoToneMapping } from "three";
 import { shaderErrorToString } from "../lib/shader-error";
@@ -30,6 +30,24 @@ export const IsbnMap: React.FC<{ config: ProjectionConfig }> = observer(
   function IsbnView(props: { config: ProjectionConfig }) {
     const [store] = useState(() => new Store(props.config));
     Object.assign(window, { store });
+
+    useEffect(() => {
+      function cancelHighlightListener() {
+        if (cancelHighlight) store.highlightedPublisher = null;
+        else cancelHighlight = true;
+      }
+      function cancelZoom() {
+        // cancel flight on scroll
+        cancelAnimationFrame(store.animationRequestId);
+      }
+
+      window.addEventListener("wheel", cancelZoom);
+      window.addEventListener("pointermove", cancelHighlightListener);
+      return () => {
+        window.removeEventListener("wheel", cancelZoom);
+        window.removeEventListener("pointermove", cancelHighlightListener);
+      };
+    }, []);
 
     const transparent = useMemo(
       () =>
@@ -62,14 +80,6 @@ export const IsbnMap: React.FC<{ config: ProjectionConfig }> = observer(
           }}
           scene={{ background: new THREE.Color("#1d2636") }}
           gl={{ toneMapping: NoToneMapping }}
-          onPointerMove={(e) => {
-            if (cancelHighlight) store.highlightedPublisher = null;
-            else cancelHighlight = true;
-          }}
-          onWheel={(e) => {
-            // cancel flight on scroll
-            cancelAnimationFrame(store.animationRequestId);
-          }}
         >
           <OrthographicCamera makeDefault position={[0, 0, 100]} />
           <OrbitControls
