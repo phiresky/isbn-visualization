@@ -127,8 +127,8 @@ const MinimapSVG: React.FC<MinimapSVGProps> = observer(
           x: coords.x - this.overlay.x,
           y: coords.y - this.overlay.y,
         };
-        window.addEventListener("mousemove", this.handleMouseMove);
-        window.addEventListener("mouseup", this.handleMouseUp);
+        window.addEventListener("pointermove", this.handleMouseMove);
+        window.addEventListener("pointerup", this.handleMouseUp);
       },
 
       handleMouseMove(event: MouseEvent) {
@@ -154,8 +154,8 @@ const MinimapSVG: React.FC<MinimapSVGProps> = observer(
       handleMouseUp() {
         this.isDragging = false;
 
-        window.removeEventListener("mousemove", this.handleMouseMove);
-        window.removeEventListener("mouseup", this.handleMouseUp);
+        window.removeEventListener("pointermove", this.handleMouseMove);
+        window.removeEventListener("pointerup", this.handleMouseUp);
       },
     }));
 
@@ -165,7 +165,7 @@ const MinimapSVG: React.FC<MinimapSVGProps> = observer(
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
         ref={svgRef}
         // onMouseLeave={state.handleMouseUp}
-        onMouseDown={state.handleMouseDown}
+        onPointerDown={state.handleMouseDown}
       >
         {/* Background */}
         <rect width={WIDTH} height={HEIGHT} fill="#1a1a1a" />
@@ -328,8 +328,8 @@ const RenderBlock: React.FC<{ block: BlockConfig; store: Store }> = observer(
 
     return (
       <g
-        onMouseEnter={() => setHovered(pos)}
-        onMouseLeave={() => setHovered(null)}
+        onPointerEnter={() => setHovered(pos)}
+        onPointerLeave={() => setHovered(null)}
         onClick={() => {
           const start = firstIsbnInPrefix(isbnPrefixFromRelative(pos));
           const end = lastIsbnInPrefix(isbnPrefixFromRelative(pos));
