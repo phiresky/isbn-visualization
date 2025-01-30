@@ -1,5 +1,6 @@
-import { Observer, observer } from "mobx-react-lite";
-import React, { useState } from "react";
+import { computed } from "mobx";
+import { Observer, observer, useLocalObservable } from "mobx-react-lite";
+import React, { useRef } from "react";
 import { Store } from "../lib/Store";
 import {
   firstIsbnInPrefix,
@@ -39,7 +40,7 @@ const DEFAULT_BLOCKS = [
   { pos: "111", text: "KR" },
   { pos: "112", text: "IT" },
   { pos: "113", text: "ES" },
-];
+] as BlockConfig[];
 
 interface Overlay {
   x: number;
@@ -49,12 +50,10 @@ interface Overlay {
 }
 
 interface BlockConfig {
-  pos: string; // Two digits (row/col) for main blocks, four digits (row/col/subdivision) for XX
+  pos: IsbnPrefixRelative; // Two digits (row/col) for main blocks, four digits (row/col/subdivision) for XX
   text: string;
   color?: string;
 }
-
-type CellType = "main" | "xx" | "us";
 
 interface BlockClickEvent {
   pos: IsbnPrefixRelative;
@@ -63,116 +62,285 @@ interface BlockClickEvent {
 
 interface MinimapSVGProps {
   blocks?: BlockConfig[];
-  onCellClick?: (event: BlockClickEvent) => void;
   store: Store;
 }
 
-const MinimapSVG: React.FC<MinimapSVGProps> = ({
-  blocks = DEFAULT_BLOCKS,
-  onCellClick,
-  store,
-}) => {
-  const [hoveredCell, setHoveredCell] = useState<string | null>(null);
+// Constants
+const SQRT10 = Math.sqrt(10);
+const WIDTH = 100;
+const HEIGHT = WIDTH * (2 / SQRT10);
+const ROW_HEIGHT = HEIGHT / 2;
+const CELL_WIDTH = WIDTH / 10;
+const XX_HEIGHT = ROW_HEIGHT / 10;
 
-  // Constants
-  const SQRT10 = Math.sqrt(10);
-  const WIDTH = 100;
-  const HEIGHT = WIDTH * (2 / SQRT10);
-  const ROW_HEIGHT = HEIGHT / 2;
-  const CELL_WIDTH = WIDTH / 10;
-  const XX_HEIGHT = ROW_HEIGHT / 10;
+const MinimapSVG: React.FC<MinimapSVGProps> = observer(
+  ({ blocks = DEFAULT_BLOCKS, store }) => {
+    const svgRef = useRef<SVGSVGElement>(null);
 
-  // Helper to parse position string
-  const parsePosition = (pos: string) => {
-    if (pos.length === 2) {
-      // Main block: row/column
-      return {
-        row: parseInt(pos[0]),
-        column: parseInt(pos[1]),
-        subdivision: null,
-      };
-    } else if (pos.length === 3) {
-      // XX block: row/column/subdivision
-      return {
-        row: parseInt(pos[0]),
-        column: parseInt(pos[1]),
-        subdivision: parseInt(pos.slice(2)),
-      };
-    }
-    throw new Error(
-      "Position must be 2 digits for main blocks or 3 digits for XX blocks"
+    const scale = store.projection.pixelWidth / WIDTH;
+    const state = useLocalObservable(() => ({
+      isDragging: false,
+      dragStart: { x: 0, y: 0 },
+      get overlay() {
+        const fakeScale = 0.5;
+        const w = store.view.width / store.projection.pixelWidth;
+        const overlay = {
+          x: store.view.minX / scale + fakeScale,
+          y: store.view.minY / scale + fakeScale,
+          width: Math.max(0.5, store.view.width / scale - w * fakeScale * 2),
+          height: Math.max(0.5, store.view.height / scale - w * fakeScale * 2),
+        };
+        return overlay;
+      },
+      setOverlay(o: Overlay) {
+        store.setView(
+          (o.x + o.width / 2) * scale,
+          (o.y + o.height / 2) * scale
+        );
+      },
+      // Convert screen coordinates to SVG coordinates
+      getLocalCoordinates(event: React.MouseEvent | MouseEvent): {
+        x: number;
+        y: number;
+      } {
+        if (!svgRef.current) return { x: 0, y: 0 };
+
+        const CTM = svgRef.current.getScreenCTM();
+        if (!CTM) return { x: 0, y: 0 };
+
+        const point = svgRef.current.createSVGPoint();
+        point.x = event.clientX;
+        point.y = event.clientY;
+        const transformed = point.matrixTransform(CTM.inverse());
+
+        return {
+          x: Math.max(0, Math.min(WIDTH, transformed.x)),
+          y: Math.max(0, Math.min(HEIGHT, transformed.y)),
+        };
+      },
+
+      handleMouseDown(event: React.MouseEvent) {
+        event.preventDefault();
+        const coords = this.getLocalCoordinates(event);
+        this.isDragging = true;
+        this.dragStart = {
+          x: coords.x - this.overlay.x,
+          y: coords.y - this.overlay.y,
+        };
+        window.addEventListener("mousemove", this.handleMouseMove);
+        window.addEventListener("mouseup", this.handleMouseUp);
+      },
+
+      handleMouseMove(event: MouseEvent) {
+        if (!this.isDragging) return;
+
+        const coords = this.getLocalCoordinates(event);
+        const newX = Math.max(
+          0,
+          Math.min(WIDTH - this.overlay.width, coords.x - this.dragStart.x)
+        );
+        const newY = Math.max(
+          0,
+          Math.min(HEIGHT - this.overlay.height, coords.y - this.dragStart.y)
+        );
+
+        this.setOverlay({
+          ...this.overlay,
+          x: newX,
+          y: newY,
+        });
+      },
+
+      handleMouseUp() {
+        this.isDragging = false;
+
+        window.removeEventListener("mousemove", this.handleMouseMove);
+        window.removeEventListener("mouseup", this.handleMouseUp);
+      },
+    }));
+
+    return (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+        ref={svgRef}
+        // onMouseLeave={state.handleMouseUp}
+        onMouseDown={state.handleMouseDown}
+      >
+        {/* Background */}
+        <rect width={WIDTH} height={HEIGHT} fill="#1a1a1a" />
+
+        {/* Blocks */}
+        {blocks.map((b) => (
+          <RenderBlock key={b.pos} block={b} store={store} />
+        ))}
+
+        {/* Grid lines */}
+        <g stroke="#333" strokeWidth="0.25">
+          {Array.from({ length: 11 }, (_, i) => (
+            <line
+              key={`vline-${i}`}
+              x1={i * CELL_WIDTH}
+              y1={0}
+              x2={i * CELL_WIDTH}
+              y2={HEIGHT}
+            />
+          ))}
+          {Array.from({ length: 3 }, (_, i) => (
+            <line
+              key={`hline-${i}`}
+              x1={0}
+              y1={i * ROW_HEIGHT}
+              x2={WIDTH}
+              y2={i * ROW_HEIGHT}
+            />
+          ))}
+        </g>
+
+        <Observer>
+          {() => {
+            const overlay = state.overlay;
+            const widthRatio = overlay.width / WIDTH;
+
+            return (
+              <>
+                <rect
+                  pointerEvents="none"
+                  x={overlay.x}
+                  y={overlay.y}
+                  rx={5 * widthRatio}
+                  width={overlay.width}
+                  height={overlay.height}
+                  fill={`rgba(255,255,255,${Math.max(
+                    0,
+                    Math.min(1, 1 - widthRatio)
+                  )})`}
+                  stroke="#fff"
+                  strokeWidth="0.5"
+                />
+                {/* if very small, draw a white circle around the rect */}
+                {widthRatio < 0.02 && (
+                  <circle
+                    cx={overlay.x + overlay.width / 2}
+                    cy={overlay.y + overlay.height / 2}
+                    r={3}
+                    fill="none"
+                    stroke="#fff"
+                    strokeWidth="0.5"
+                  />
+                )}
+              </>
+            );
+          }}
+        </Observer>
+      </svg>
     );
-  };
+  }
+);
 
-  // Color generation
-  const generateColor = (pos: string): string => {
-    const { row, column, subdivision } = parsePosition(pos);
-    const isXX = subdivision !== null;
+// Helper to parse position string
+const parsePosition = (pos: string) => {
+  if (pos.length === 2) {
+    // Main block: row/column
+    return {
+      row: parseInt(pos[0]),
+      column: parseInt(pos[1]),
+      subdivision: null,
+    };
+  } else if (pos.length === 3) {
+    // XX block: row/column/subdivision
+    return {
+      row: parseInt(pos[0]),
+      column: parseInt(pos[1]),
+      subdivision: parseInt(pos.slice(2)),
+    };
+  }
+  throw new Error(
+    "Position must be 2 digits for main blocks or 3 digits for XX blocks"
+  );
+};
+// Color generation
+const generateColor = (pos: string): string => {
+  const { row, column, subdivision } = parsePosition(pos);
+  const isXX = subdivision !== null;
 
-    if (isXX) {
-      const baseHues: Record<number, number> = {
-        6: 180, // Cyan-based
-        8: 280, // Purple-based
-        9: 30, // Orange-based
-      };
-      const hue = (baseHues[column] || 0) + subdivision * 10;
-      return `hsl(${hue}, 80%, ${60 + subdivision * 2}%)`;
-    } else {
-      const baseColors: Record<string, string> = {
-        "00": "#4a90e2", // EN
-        "01": "#4a90e2", // EN
-        "02": "#50c878", // FR
-        "03": "#daa520", // DE
-        "04": "#ff6b6b", // JP
-        "05": "#9370db", // RU
-        "07": "#ff4500", // CN
-        "18": "#4169e1", // US
-      };
-      return baseColors[pos] || "#808080";
-    }
-  };
+  if (isXX) {
+    const baseHues: Record<number, number> = {
+      6: 180, // Cyan-based
+      8: 280, // Purple-based
+      9: 30, // Orange-based
+    };
+    const hue = (baseHues[column] || 0) + subdivision * 10;
+    return `hsl(${hue}, 80%, ${60 + subdivision * 2}%)`;
+  } else {
+    const baseColors: Record<string, string> = {
+      "00": "#4a90e2", // EN
+      "01": "#4a90e2", // EN
+      "02": "#50c878", // FR
+      "03": "#daa520", // DE
+      "04": "#ff6b6b", // JP
+      "05": "#9370db", // RU
+      "07": "#ff4500", // CN
+      "18": "#4169e1", // US
+    };
+    return baseColors[pos] || "#808080";
+  }
+};
+// Helper to determine if a position represents an XX block
+const isXXBlock = (pos: string): boolean => pos.length === 3;
 
-  // Helper to determine if a position represents an XX block
-  const isXXBlock = (pos: string): boolean => pos.length === 3;
+// Helper to get block dimensions
+const getBlockDimensions = (pos: string) => {
+  const { row, column, subdivision } = parsePosition(pos);
 
-  // Helper to get block dimensions
-  const getBlockDimensions = (pos: string) => {
-    const { row, column, subdivision } = parsePosition(pos);
-
-    if (subdivision !== null) {
-      return {
-        x: column * CELL_WIDTH,
-        y: row * ROW_HEIGHT + subdivision * XX_HEIGHT,
-        width: CELL_WIDTH,
-        height: XX_HEIGHT,
-      };
-    } else {
-      return {
-        x: column * CELL_WIDTH,
-        y: row * ROW_HEIGHT,
-        width: CELL_WIDTH,
-        height: ROW_HEIGHT,
-      };
-    }
-  };
-
-  const renderBlock = (block: BlockConfig) => {
+  if (subdivision !== null) {
+    return {
+      x: column * CELL_WIDTH,
+      y: row * ROW_HEIGHT + subdivision * XX_HEIGHT,
+      width: CELL_WIDTH,
+      height: XX_HEIGHT,
+    };
+  } else {
+    return {
+      x: column * CELL_WIDTH,
+      y: row * ROW_HEIGHT,
+      width: CELL_WIDTH,
+      height: ROW_HEIGHT,
+    };
+  }
+};
+const RenderBlock: React.FC<{ block: BlockConfig; store: Store }> = observer(
+  ({ block, store }) => {
     const { pos, text } = block;
     const dims = getBlockDimensions(pos);
-    const isHovered = hoveredCell === pos;
+    const isHovered = computed(() => store.minimapHoveredCell === pos).get();
     const isXX = isXXBlock(pos);
+
+    function setHovered(pos: IsbnPrefixRelative | null) {
+      store.minimapHoveredCell = pos;
+      if (pos) {
+        const p = isbnPrefixFromRelative(pos);
+        store.highlightedStats = { prefixStart: p, prefixEnd: p };
+      } else {
+        store.highlightedStats = null;
+      }
+    }
 
     return (
       <g
-        key={pos}
-        onMouseEnter={() => setHoveredCell(pos)}
-        onMouseLeave={() => setHoveredCell(null)}
-        onClick={() =>
-          onCellClick?.({
-            pos,
-            text,
-          })
-        }
+        onMouseEnter={() => setHovered(pos)}
+        onMouseLeave={() => setHovered(null)}
+        onClick={() => {
+          const start = firstIsbnInPrefix(isbnPrefixFromRelative(pos));
+          const end = lastIsbnInPrefix(isbnPrefixFromRelative(pos));
+          const p = getPlanePosition(store.projection, start, end);
+          store.zoomAnimateTo(
+            p.xStart + p.width / 2,
+            p.yStart + p.height / 2,
+            { 2: 2, 3: 0.9 * Math.sqrt(10) ** 2 }[pos.length] ?? 1,
+            1
+          );
+        }}
         style={{ cursor: "pointer" }}
       >
         <rect
@@ -194,114 +362,15 @@ const MinimapSVG: React.FC<MinimapSVGProps> = ({
         </text>
       </g>
     );
-  };
-
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${WIDTH} ${HEIGHT}`}>
-      {/* Background */}
-      <rect width={WIDTH} height={HEIGHT} fill="#1a1a1a" />
-
-      {/* Blocks */}
-      {blocks.map(renderBlock)}
-
-      {/* Grid lines */}
-      <g stroke="#333" strokeWidth="0.25">
-        {Array.from({ length: 11 }, (_, i) => (
-          <line
-            key={`vline-${i}`}
-            x1={i * CELL_WIDTH}
-            y1={0}
-            x2={i * CELL_WIDTH}
-            y2={HEIGHT}
-          />
-        ))}
-        {Array.from({ length: 3 }, (_, i) => (
-          <line
-            key={`hline-${i}`}
-            x1={0}
-            y1={i * ROW_HEIGHT}
-            x2={WIDTH}
-            y2={i * ROW_HEIGHT}
-          />
-        ))}
-      </g>
-
-      <Observer>
-        {() => {
-          const scale = store.projection.pixelWidth / WIDTH;
-          const fakeScale = 0.5;
-          const w = store.view.width / store.projection.pixelWidth;
-          const overlay = {
-            x: store.view.minX / scale + fakeScale,
-            y: store.view.minY / scale + fakeScale,
-            width: Math.max(0.5, store.view.width / scale - w * fakeScale * 2),
-            height: Math.max(
-              0.5,
-              store.view.height / scale - w * fakeScale * 2
-            ),
-          };
-          const widthRatio = overlay.width / WIDTH;
-          return (
-            <>
-              <rect
-                pointerEvents="none"
-                x={overlay.x}
-                y={overlay.y}
-                rx={5 * widthRatio}
-                width={overlay.width}
-                height={overlay.height}
-                fill={`rgba(255,255,255,${Math.max(
-                  0,
-                  Math.min(1, 1 - widthRatio)
-                )})`}
-                stroke="#fff"
-                strokeWidth="0.5"
-              />
-              {/* if very small, draw a white circle around the rect */}
-              {widthRatio < 0.02 && (
-                <circle
-                  cx={overlay.x + overlay.width / 2}
-                  cy={overlay.y + overlay.height / 2}
-                  r={3}
-                  fill="none"
-                  stroke="#fff"
-                  strokeWidth="0.5"
-                />
-              )}
-            </>
-          );
-        }}
-      </Observer>
-    </svg>
-  );
-};
-
-/*
-      {/* Overlay rectangle 
-     
-    </svg>
-  );
-};*/
+  }
+);
 
 export const MiniMap: React.FC<{ store: Store }> = observer(function MiniMap(
   props
 ) {
   return (
     <div className="minimap">
-      <MinimapSVG
-        store={props.store}
-        onCellClick={(e) => {
-          const start = firstIsbnInPrefix(isbnPrefixFromRelative(e.pos));
-          const end = lastIsbnInPrefix(isbnPrefixFromRelative(e.pos));
-          const p = getPlanePosition(props.store.projection, start, end);
-          props.store.zoomAnimateTo(
-            p.xStart + p.width / 2,
-            p.yStart + p.height / 2,
-            { 2: 2, 3: 0.9 * Math.sqrt(10) ** 2 }[e.pos.length] ?? 1,
-            1
-          );
-        }}
-      />
+      <MinimapSVG store={props.store} />
       {props.store.resetZoomButton && (
         <button
           style={{

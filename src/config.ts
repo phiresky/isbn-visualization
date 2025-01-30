@@ -62,8 +62,8 @@ export default {
         title: "File Availability",
         markers: [
           { value: 0, label: "Missing" },
-          { value: 0.5, label: "50%" },
-          { value: 1, label: "100% present" },
+          { value: 0.5, label: "50% present" },
+          { value: 1, label: "100%" },
         ],
       },
     },

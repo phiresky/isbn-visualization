@@ -221,7 +221,6 @@ class TimeInterpolatingTrajectory implements Trajectory {
 
     function duration(p: Point3D) {
       const dur = Math.log10(1 + 1 / p.z / 8);
-      console.log(p, dur);
       console.assert(dur >= 0, "duration should be positive");
       return dur;
     }

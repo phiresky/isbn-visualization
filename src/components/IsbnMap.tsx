@@ -81,7 +81,7 @@ export const IsbnMap: React.FC<{ config: ProjectionConfig }> = observer(
           scene={{ background: new THREE.Color("#1d2636") }}
           gl={{ toneMapping: NoToneMapping }}
         >
-          <OrthographicCamera makeDefault position={[0, 0, 100]} />
+          <OrthographicCamera makeDefault position={[0, 0, 100]} zoom={0.8} />
           <OrbitControls
             ref={(e) => {
               store.orbitControls = e;
@@ -111,7 +111,7 @@ export const IsbnMap: React.FC<{ config: ProjectionConfig }> = observer(
                 store.highlightedPublisher = null;
                 const x = e.point.x + props.config.pixelWidth / 2;
                 const y = props.config.pixelHeight / 2 - e.point.y;
-                store.updateStats(x, y, "start");
+                store.updateHighlightedStats(x, y, "start");
               }
             }}
             onPointerUp={(e: ThreeEvent<PointerEvent>) => {
@@ -138,7 +138,7 @@ export const IsbnMap: React.FC<{ config: ProjectionConfig }> = observer(
               if (isPointerDown === 2) {
                 if ((e.nativeEvent.target as Element)?.tagName !== "CANVAS")
                   return;
-                store.updateStats(x, y, "end");
+                store.updateHighlightedStats(x, y, "end");
               }
               if (isPointerDown === -1 && e.pointerType === "mouse") {
                 if ((e.nativeEvent.target as Element)?.tagName !== "CANVAS")

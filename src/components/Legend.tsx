@@ -10,7 +10,7 @@ export const gradientsPngUrl = new URL(
   "../assets/gradients.png",
   import.meta.url
 ).toString();
-const w = 250;
+const w = 230;
 const h = 20;
 const totalGradientsInPng = 9;
 const options = Array.from({ length: totalGradientsInPng })

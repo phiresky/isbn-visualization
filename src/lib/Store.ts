@@ -46,6 +46,7 @@ export class Store {
   camera?: OrthographicCamera;
   orbitControls?: OrbitControlsProps["ref"] | null = null;
   statsCalculator = new StatsCalculator();
+  minimapHoveredCell: string | null = null;
 
   highlightedIsbn:
     | { type: "todo" }
@@ -198,7 +199,7 @@ export class Store {
     }
   }
 
-  updateStats(x: number, y: number, mode: "start" | "end") {
+  updateHighlightedStats(x: number, y: number, mode: "start" | "end") {
     const relativeIsbn = this.projection.coordsToRelativeIsbn(x, y);
     const prefix = relativeToIsbnPrefix(relativeIsbn).slice(
       0,
@@ -327,6 +328,17 @@ export class Store {
     const targetX = x + width / 2;
     const targetY = y + (height * 3) / 4;
     this.zoomAnimateTo(targetX, targetY, 14000, 7);
+  }
+  setView(targetX: number, targetY: number) {
+    targetX -= this.projection.pixelWidth / 2;
+    targetY = this.projection.pixelHeight / 2 - targetY;
+    const camera = this.camera!;
+    camera.position.x = targetX;
+    camera.position.y = targetY;
+    // if (position.zoom) camera.zoom = position.zoom;
+    this.orbitControls.target.x = camera.position.x;
+    this.orbitControls.target.y = camera.position.y;
+    camera.updateProjectionMatrix();
   }
   zoomAnimateTo(
     targetX: number,
