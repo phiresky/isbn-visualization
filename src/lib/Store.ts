@@ -323,14 +323,14 @@ export class Store {
       this.highlightedIsbn.relative
     );
     const targetX = x + width / 2 - this.projection.pixelWidth / 2;
-    const targetY = this.projection.pixelHeight / 2 - y - (height * 2) / 3;
+    const targetY = this.projection.pixelHeight / 2 - y - (height * 3) / 4;
     const camera = this.camera;
     if (!camera) return;
     const orbitControls = this.orbitControls;
     if (!orbitControls) return;
     const orig = { ...camera.position };
     const origZoom = camera.zoom;
-    const targetZoom = 15000;
+    const targetZoom = 14000;
     const maxZoom = 1; // maxZoom = distance 1. 1/2 * maxZoom = distance 2 => maxZoom/n = distance n;
     const from = new Point3D(orig.x, orig.y, maxZoom / camera.zoom);
     const to = new Point3D(targetX, targetY, maxZoom / targetZoom);

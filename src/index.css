@@ -75,6 +75,7 @@ code {
   transition: all 0.2s ease;
   cursor: pointer;
   display: block;
+  width: 100%;
 }
 
 .controls button:hover {
@@ -310,7 +311,7 @@ code {
   box-shadow: rgba(0, 0, 0, 0.2) 0px 8px 24px;
   border-radius: 8px;
   padding: 1rem;
-  min-width: 320px;
+  min-width: 350px;
   max-width: 450px;
   font-size: 0.9375rem;
   line-height: 1.5;
@@ -387,8 +388,8 @@ code {
 }
 
 .isbn-highlight img {
-  margin: 0.5rem;
-  max-height: 80px;
+  margin-right: 0.5rem;
+  max-height: 85px;
   border: 1px solid #e5e7eb;
   border-radius: 4px;
 }
@@ -419,4 +420,9 @@ code {
 
 .isbn-highlight a:hover {
   text-decoration: underline;
+}
+
+.float-button {
+  float: right;
+  margin-left: 1ex;
 }

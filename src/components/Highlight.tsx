@@ -203,7 +203,7 @@ const IsbnInfo = observer(function IsbnInfo(props: { store: Store }) {
         }}
       >
         <button
-          style={{ float: "right", pointerEvents: "auto" }}
+          className="float-button"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -213,7 +213,7 @@ const IsbnInfo = observer(function IsbnInfo(props: { store: Store }) {
           Close
         </button>
         <button
-          style={{ float: "right" }}
+          className="float-button"
           onClick={() => props.store.zoomAnimateToHighlight()}
         >
           Fly to book
@@ -232,8 +232,9 @@ const IsbnInfo = observer(function IsbnInfo(props: { store: Store }) {
               }
               style={{ float: "left" }}
             />
-            <b>{o.googleBookDetails.volumeInfo.title}</b> by{" "}
-            {o.googleBookDetails.volumeInfo.authors?.join(", ")}
+            <b>{o.googleBookDetails.volumeInfo.title}</b>
+            <br />
+            by {o.googleBookDetails.volumeInfo.authors?.join(", ")}
             <br />
             ISBN: {isbn}
           </>
