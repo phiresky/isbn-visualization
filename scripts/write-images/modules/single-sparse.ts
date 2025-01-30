@@ -21,7 +21,7 @@ export async function colorImageWithSparseIsbns(
       for (let j = 0; j < value; j++) {
         const isbn = position as IsbnRelative;
         tiler.colorIsbn(isbn, addcolor);
-        tiler.stats?.addStatistic(isbn, { count: 1 });
+        // tiler.stats?.addStatistic(isbn, { count: 1 });
 
         position++;
       }

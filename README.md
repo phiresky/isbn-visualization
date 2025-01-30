@@ -87,8 +87,8 @@ Output:
 ```bash
 # you might want to run some these in parallel, each takes a 1-10 minutes.
 
-for dataset in all publishers rarity cadal_ssno cerlalc duxiu_ssid edsebk gbooks goodreads ia isbndb isbngrp libby md5 nexusstc nexusstc_download clc ol rgb trantor; do
-    pnpm tsx write-images $dataset all
+for dataset in all publishers rarity publication_date cadal_ssno cerlalc duxiu_ssid edsebk gbooks goodreads ia isbndb isbngrp libby md5 nexusstc nexusstc_download oclc ol rgb trantor; do
+    pnpm tsx scripts/write-images $dataset all
 done
 ```
 
@@ -145,7 +145,9 @@ Minify the images using [oxipng](https://github.com/shssoichiro/oxipng) and [png
 This reduces image size by 5-50%!
 
 ```bash
-scripts/minify-images.sh public/images/tiled/publishers
+scripts/minify-images.sh public/images/tiled/
+# or
+scripts/minify-images.sh public/images/tiled/[dataset]
 ```
 
 ## Running the main web viewer
