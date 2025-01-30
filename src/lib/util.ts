@@ -124,3 +124,13 @@ export const statsConfig = {
   minPrefixLength: 3,
   maxPrefixLength: 7,
 };
+
+export function splitNameJson(prefixStr: string, dirSegmentLength: number) {
+  let fname = "";
+  for (let i = 0; i < prefixStr.length; i += dirSegmentLength) {
+    fname += prefixStr.slice(i, i + dirSegmentLength) + "/";
+  }
+  if (fname.endsWith("/")) fname = fname.slice(0, -1);
+  fname += ".json";
+  return fname;
+}

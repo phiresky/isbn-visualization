@@ -1,7 +1,15 @@
 import * as isbnlib from "isbn3";
 import { observer } from "mobx-react-lite";
+import { fromPromise } from "mobx-utils";
+import { useMemo } from "react";
+import { fetchJson } from "../lib/json-fetch";
 import { Store } from "../lib/Store";
-import { IsbnStrWithChecksum } from "../lib/util";
+import {
+  Isbn13Number,
+  IsbnPrefixWithoutDashes,
+  IsbnStrWithChecksum,
+  splitNameJson,
+} from "../lib/util";
 import { EanBarcode } from "./EanBarcode";
 
 function dot(v1: [number, number], v2: [number, number]) {
@@ -28,6 +36,37 @@ export function bookHeight(bookIndex: [number, number]) {
   return minBookHeight + (maxBookHeight - minBookHeight) * re;
 }
 
+type Infoo = { isbn13: Isbn13Number; title: string; creator: string };
+const DOMAIN = `https://isbn-titles.phiresky.xyz/`;
+class TitleFetcher {
+  cache: Map<
+    IsbnPrefixWithoutDashes,
+    Promise<Map<IsbnStrWithChecksum, Infoo>>
+  > = new Map();
+  async fetchTitle(title: IsbnStrWithChecksum): Promise<Infoo | undefined> {
+    const prefixStr = title.slice(0, 8) as IsbnPrefixWithoutDashes;
+    const fname = splitNameJson(prefixStr, 3);
+
+    let gotten = this.cache.get(prefixStr);
+    if (!gotten) {
+      gotten = fetchJson<Infoo[]>(DOMAIN + fname).then(
+        (data) =>
+          new Map(
+            data.map((info) => [
+              String(info.isbn13) as IsbnStrWithChecksum,
+              info,
+            ])
+          )
+      );
+      console.log(prefixStr, gotten);
+      this.cache.set(prefixStr, gotten);
+    }
+    const data = await gotten;
+    return data.get(title);
+  }
+}
+const titleFetcher = new TitleFetcher();
+
 export const SingleBookCover = observer(function SingleBookCover({
   isbn,
   store,
@@ -35,13 +74,21 @@ export const SingleBookCover = observer(function SingleBookCover({
   store: Store;
   isbn: IsbnStrWithChecksum;
 }) {
+  const fetchTitleJson = useMemo(
+    () => fromPromise(titleFetcher.fetchTitle(isbn)),
+    [isbn]
+  );
   const titleInfo = store.cachedGoogleBooks.get(isbn);
   const [y1, x1, y2, x2, y3, x3, _checksum] = isbn.slice(-7);
   const [x, y] = [+(x1 + x2 + x3), +(y1 + y2 + y3)];
   const bookHeightE = bookHeight([x, 999 - y]);
   // console.log(isbn, x, y);
-  const title = titleInfo?.volumeInfo.title;
-  const author = titleInfo?.volumeInfo.authors?.join(", ");
+  const title =
+    titleInfo?.volumeInfo.title ??
+    fetchTitleJson.case({ fulfilled: (t) => t?.title });
+  const author =
+    titleInfo?.volumeInfo.authors?.join(", ") ??
+    fetchTitleJson.case({ fulfilled: (t) => t?.creator });
   return (
     <div
       className="single-book"
@@ -54,11 +101,9 @@ export const SingleBookCover = observer(function SingleBookCover({
         </div>
       </div>
       <div className="titleinfo">
-        <div className={`title ${!title ? "unknown" : ""}`}>
-          {title ?? "" /*Unknown Title"*/}
-        </div>
+        <div className={`title ${!title ? "unknown" : ""}`}>{title}</div>
         <div className={`author ${!author ? "unknown" : ""}`}>
-          {author ? `by ${author}` : "" /* "Unknown Author"*/}
+          {author ? `by ${author}` : ""}
         </div>
       </div>
     </div>

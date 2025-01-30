@@ -220,7 +220,7 @@ vec4 withPublisherColor(vec4 bookColor, float publishersBrightness) {
       if (HIGHLIGHTED_PUBLISHER_ID == publisherId) {
       float minZoom = 0.05 * pow(10., float(HIGHLIGHTED_PUBLISHER_PREFIX_LENGTH) / 2.0);
       float maxZoom = minZoom * sqrt(10.0);
-      float fadeOut = clamp((CURRENT_ZOOM - minZoom) / (maxZoom - minZoom), 0.0, 1.0);
+      float fadeOut = clamp((CURRENT_ZOOM - minZoom) / (maxZoom - minZoom), 0.4, 1.0);
         return mix(vec4(137.0, 196.0, 244.0, 255.0) / 255., color, fadeOut);
       }
   }

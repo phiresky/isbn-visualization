@@ -145,7 +145,7 @@ const MainStuff: React.FC<{ store: Store }> = observer(function MainStuff({
         to show stats.
       </p>
       <label className="form-row">
-        <div>Show publisher detail:</div>
+        <div>Show publisher details:</div>
         <input
           type="checkbox"
           checked={store.runtimeConfig.showPublisherNames}

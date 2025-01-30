@@ -39,6 +39,8 @@ enum RawRecord {
 struct TitleRecord {
     #[serde(rename = "oclcNumber")]
     oclc_number: String,
+    title: Option<String>,
+    creator: Option<String>,
     //#[serde(rename = "totalEditions")]
     //total_editions: u32,
     // isbn13: Option<String>,
@@ -67,6 +69,8 @@ struct JsonRecord {
 enum ParsedRecord {
     Title {
         oclc_num: OclcIdNumeric,
+        title: Option<String>,
+        creator: Option<String>,
         isbn: Vec<i64>,
         publication_date: Option<i64>,
     },
@@ -155,9 +159,11 @@ fn process_batch(lines: Vec<String>, record_count: u64) -> Vec<ParsedRecord> {
                                         return None;
                                     }
                                     Some(int)
-})
+                                })
                                 .collect(),
-                                publication_date: parse_publication_date(&record)
+                            publication_date: parse_publication_date(&record),
+                            title: record.title,
+                            creator: record.creator,
                         }];
                     }
                 }
@@ -176,17 +182,31 @@ fn process_batch(lines: Vec<String>, record_count: u64) -> Vec<ParsedRecord> {
 
 // try each of the three date fields in order (machineReadableDate, publicationDate, date), parse them with the regex ".*\b([12]\d\d\d)\b.*", fall back to next if regex fails
 fn parse_single_date(date: &str) -> Option<i64> {
-    static RE: LazyLock<regex::Regex> = LazyLock::new(|| regex::Regex::new(r".*\b([12]\d\d\d)\b.*").unwrap());
+    static RE: LazyLock<regex::Regex> =
+        LazyLock::new(|| regex::Regex::new(r".*\b([12]\d\d\d)\b.*").unwrap());
 
-    RE.captures(date).and_then(|cap| cap.get(1)).and_then(|m| m.as_str().parse().ok())
+    RE.captures(date)
+        .and_then(|cap| cap.get(1))
+        .and_then(|m| m.as_str().parse().ok())
 }
 fn parse_publication_date(record: &TitleRecord) -> Option<i64> {
-    record.machine_readable_date.as_ref().and_then(|date| parse_single_date(date))
-        .or_else(|| record.publication_date.as_ref().and_then(|date| parse_single_date(date)))
-        .or_else(|| record.date.as_ref().and_then(|date| parse_single_date(date)))
+    record
+        .machine_readable_date
+        .as_ref()
+        .and_then(|date| parse_single_date(date))
+        .or_else(|| {
+            record
+                .publication_date
+                .as_ref()
+                .and_then(|date| parse_single_date(date))
+        })
+        .or_else(|| {
+            record
+                .date
+                .as_ref()
+                .and_then(|date| parse_single_date(date))
+        })
 }
-
-
 
 fn reader_thread(reader: impl BufRead, sender: Sender<Vec<String>>) -> io::Result<()> {
     let mut batch = Vec::with_capacity(CHANNEL_BATCH_SIZE);
@@ -222,6 +242,8 @@ fn setup_database(conn: &Connection) -> rusqlite::Result<()> {
             oclc_number INTEGER NOT NULL,
             isbn13 INTEGER NOT NULL,
             publication_date INTEGER,
+            title TEXT,
+            creator TEXT,
             PRIMARY KEY (oclc_number, isbn13)
         );
         CREATE INDEX IF NOT EXISTS isbn_oclc_number ON isbn_data (isbn13);
@@ -321,12 +343,14 @@ fn store_to_db(
                 oclc_num,
                 isbn,
                 publication_date,
+                title,
+                creator,
             } => {
                 for isbn in isbn {
                     tx.prepare_cached(
-                        "INSERT OR IGNORE INTO isbn_data (oclc_number, isbn13, publication_date) VALUES (?1, ?2, ?3)",
+                        "INSERT OR IGNORE INTO isbn_data (oclc_number, isbn13, publication_date, title, creator) VALUES (?1, ?2, ?3, ?4, ?5)",
                     )?
-                    .execute(params![oclc_num, isbn, publication_date])?;
+                    .execute(params![oclc_num, isbn, publication_date, title, creator])?;
                 }
             }
             ParsedRecord::Holdings { oclc_num, holdings } => {
