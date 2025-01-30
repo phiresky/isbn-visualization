@@ -144,6 +144,20 @@ const MainStuff: React.FC<{ store: Store }> = observer(function MainStuff({
         Drag/Zoom like a map. Tap to show details of an ISBN! Right-click-drag
         to show stats.
       </p>
+      <label className="form-row">
+        <div>Show publisher detail:</div>
+        <input
+          type="checkbox"
+          checked={store.runtimeConfig.showPublisherNames}
+          onChange={(e) => {
+            store.runtimeConfig.showPublisherNames = e.currentTarget.checked;
+            store.runtimeConfig.publishersBrightness = e.currentTarget.checked
+              ? 0.6
+              : 0.01;
+          }}
+        />
+      </label>
+      <p />
       <label>
         Search for a book via Google Books or ISBN:
         <AsyncSelect<MinimalGoogleBooksItem>
