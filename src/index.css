@@ -74,6 +74,8 @@ code {
   font-size: 0.875rem;
   transition: all 0.2s ease;
   cursor: pointer;
+}
+.controls button.preset {
   display: block;
   width: 100%;
 }

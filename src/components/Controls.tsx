@@ -22,12 +22,25 @@ export const Controls: React.FC<{ store: Store }> = observer(function Controls({
       <div className="head">
         <b style={{ fontSize: "120%" }}>ISBN Visualization</b>
         {state.showSettings && (
-          <button onClick={() => (state.showSettings = !state.showSettings)}>
-            <small>⚙ {state.showSettings ? "Done" : "Advanced"}</small>
-          </button>
+          <>
+            <button onClick={() => (state.showSettings = !state.showSettings)}>
+              <small>⚙ {state.showSettings ? "Done" : "Advanced"}</small>
+            </button>
+
+            <button
+              onClick={() =>
+                store.switchDataset(store.runtimeConfig.dataset, true)
+              }
+            >
+              Reset Settings
+            </button>
+          </>
         )}
         {!state.showSettings && (
-          <button onClick={() => (state.showDatasetChooser = true)}>
+          <button
+            className="preset"
+            onClick={() => (state.showDatasetChooser = true)}
+          >
             <LoadProgress store={store} /> Preset:{" "}
             {(() => {
               const ds = staticConfig.datasetOptions.find(
@@ -197,11 +210,6 @@ const Settings: React.FC<{ store: Store }> = observer(function Settings({
   const config = store.runtimeConfig;
   return (
     <>
-      <button
-        onClick={() => store.switchDataset(store.runtimeConfig.dataset, true)}
-      >
-        Reset Settings
-      </button>
       <fieldset>
         <label className="form-row">
           <div>Dataset:</div>
