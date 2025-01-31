@@ -1,13 +1,14 @@
 import isbnlib from "isbn3";
 import { observer, useLocalObservable } from "mobx-react-lite";
-import React, { useRef } from "react";
+import { fromPromise } from "mobx-utils";
+import React, { useMemo, useRef } from "react";
 import { OptionProps, components } from "react-select";
 import AsyncSelect from "react-select/async";
 import Select from "react-select/base";
 import { default as config, default as staticConfig } from "../config";
 import { GoogleBooksItem, googleBooksQuery } from "../lib/google-books";
 import { Store } from "../lib/Store";
-import { IsbnStrWithChecksum } from "../lib/util";
+import { IsbnPrefixWithoutDashes, IsbnStrWithChecksum } from "../lib/util";
 import { Legend } from "./Legend";
 
 export const Controls: React.FC<{ store: Store }> = observer(function Controls({
@@ -17,10 +18,35 @@ export const Controls: React.FC<{ store: Store }> = observer(function Controls({
     showSettings: false,
     showDatasetChooser: false,
   }));
+  const stats = useMemo(
+    () =>
+      fromPromise(
+        store.statsCalculator.getStats(
+          "978" as IsbnPrefixWithoutDashes,
+          "979" as IsbnPrefixWithoutDashes
+        )
+      ),
+    []
+  );
   return (
     <div className={`controls ${state.showSettings ? "advanced" : ""}`}>
       <div className="head">
-        <b style={{ fontSize: "120%" }}>ISBN Visualization</b>
+        <b style={{ fontSize: "120%" }}>ISBN Visualization</b>{" "}
+        {stats.case({
+          fulfilled(stats) {
+            return (
+              <small style={{ alignSelf: "flex-end" }}>
+                Showing{" "}
+                {(
+                  stats[`dataset_${store.runtimeConfig.dataset}`] ??
+                  stats.dataset_all ??
+                  0
+                ).toLocaleString()}{" "}
+                books
+              </small>
+            );
+          },
+        })}
         {state.showSettings && (
           <>
             <button onClick={() => (state.showSettings = !state.showSettings)}>
@@ -152,7 +178,7 @@ const MainStuff: React.FC<{ store: Store }> = observer(function MainStuff({
           onChange={(e) => {
             store.runtimeConfig.showPublisherNames = e.currentTarget.checked;
             store.runtimeConfig.publishersBrightness = e.currentTarget.checked
-              ? 0.6
+              ? 0.5
               : 0.01;
           }}
         />

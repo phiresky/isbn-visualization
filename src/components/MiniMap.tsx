@@ -73,6 +73,8 @@ const ROW_HEIGHT = HEIGHT / 2;
 const CELL_WIDTH = WIDTH / 10;
 const XX_HEIGHT = ROW_HEIGHT / 10;
 
+let dragDistance = 0;
+
 const MinimapSVG: React.FC<MinimapSVGProps> = observer(
   ({ blocks = DEFAULT_BLOCKS, store }) => {
     const svgRef = useRef<SVGSVGElement>(null);
@@ -114,13 +116,15 @@ const MinimapSVG: React.FC<MinimapSVGProps> = observer(
         const transformed = point.matrixTransform(CTM.inverse());
 
         return {
-          x: Math.max(0, Math.min(WIDTH, transformed.x)),
-          y: Math.max(0, Math.min(HEIGHT, transformed.y)),
+          x: transformed.x,
+          y: transformed.y,
         };
       },
 
       handleMouseDown(event: React.MouseEvent) {
+        dragDistance = 0;
         event.preventDefault();
+        if (store.floatZoomFactor <= 1) return;
         const coords = this.getLocalCoordinates(event);
         this.isDragging = true;
         this.dragStart = {
@@ -133,7 +137,7 @@ const MinimapSVG: React.FC<MinimapSVGProps> = observer(
 
       handleMouseMove(event: MouseEvent) {
         if (!this.isDragging) return;
-
+        dragDistance++;
         const coords = this.getLocalCoordinates(event);
         const newX = Math.max(
           0,
@@ -331,6 +335,7 @@ const RenderBlock: React.FC<{ block: BlockConfig; store: Store }> = observer(
         onPointerEnter={() => setHovered(pos)}
         onPointerLeave={() => setHovered(null)}
         onClick={() => {
+          if (dragDistance > 4) return;
           const start = firstIsbnInPrefix(isbnPrefixFromRelative(pos));
           const end = lastIsbnInPrefix(isbnPrefixFromRelative(pos));
           const p = getPlanePosition(store.projection, start, end);

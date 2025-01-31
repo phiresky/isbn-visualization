@@ -36,7 +36,7 @@ export function defaultRuntimeConfig(dataset: string): RuntimeConfiguration {
     dataset,
     doBookshelfEffect: true,
     groupTextVertical: true,
-    publishersBrightness: 0.6,
+    publishersBrightness: 0.5,
     shaderGlow: 5,
     showPublisherNames: true,
     showGrid: true,

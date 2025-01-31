@@ -21,6 +21,7 @@ import {
 } from "./RuntimeConfiguration";
 import { ShaderUtil } from "./shaders";
 import { StatsCalculator } from "./stats";
+import { TitleFetcher } from "./TitleFetcher";
 import {
   firstIsbnInPrefix,
   fullIsbnToRelative,
@@ -86,6 +87,7 @@ export class Store {
   } | null = null;
   resetZoomButton: boolean = false;
   shaderError = "";
+  titleFetcher = new TitleFetcher();
   constructor(projectionConfig: ProjectionConfig) {
     this.projection = projectionConfig;
     this.runtimeConfig = loadRuntimeConfigFromURL();
