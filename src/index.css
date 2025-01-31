@@ -171,8 +171,8 @@ button {
   width: var(--group-width);
   font-size: 1.2rem;
   height: var(--group-height);
-  -webkit-text-stroke: 8px black;
-  text-stroke: 8px black;
+  -webkit-text-stroke: 7px black;
+  text-stroke: 7px black;
   paint-order: stroke fill;
 }
 .group-name.vertical {

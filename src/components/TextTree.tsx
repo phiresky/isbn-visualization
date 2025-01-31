@@ -222,14 +222,17 @@ const GroupNameTxt = function GroupName(props: {
 }) {
   const firstInfo = props.group.info?.[0];
   const infoCount = props.group.info?.length || 0;
-  if (!firstInfo)
+  if (!firstInfo) {
     return (
-      <>
-        {props.prefix}
+      <small>
+        {`${props.group.totalChildren} publisher${
+          props.group.totalChildren > 1 ? "s" : ""
+        }`}
         <br />
-        <small>{`(${props.group.totalChildren} publishers)`}</small>
-      </>
+        <small>{`(${props.prefix})`}</small>
+      </small>
     );
+  }
   if (firstInfo.source === "isbngrp") {
     return (
       <>
