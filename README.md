@@ -1,5 +1,12 @@
 # ISBN Visualization
 
+**Please read https://phiresky.github.io/blog/2025/visualizing-all-books-in-isbn-space/ for the live version and description of this project**
+
+Screenshots:
+
+![Screenshot](src/assets/screenshot.png)
+![Screenshot 2](src/assets/screenshot2.png)
+
 ## Setup
 
 Fetch the main repo and (if you want) the precomputed data.
@@ -32,8 +39,8 @@ This repo contains a few scripts to generate the relevant data for the web viewe
 
 This script generates the json files representing the groups/publisher ranges.
 
-Input: `isbngrp_records.jsonl.seekable.zst`
-Output: `public/prefix-data/*.json` (split by size), `data/prefix-data.json` (the full data)
+- Input: `isbngrp_records.jsonl.seekable.zst`
+- Output: `public/prefix-data/*.json` (split by size), `data/prefix-data.json` (the full data)
 
 ```bash
 pnpm tsx scripts/gen-prefixes.ts .../aa_meta__aacid__isbngrp_records__20240920T194930Z--20240920T194930Z.jsonl.seekable.zst
@@ -45,8 +52,8 @@ scripts/minify-prefix-data.sh
 
 This one written in Rust for performance. You'll need the [Rust compiler](https://www.rust-lang.org/).
 
-Input: aa_meta**aacid**worldcat\_\_20241230T203056Z--20241230T203056Z.jsonl.seekable.zst
-Output: `data/library_holding_data.sqlite3`
+- Input: aa_meta**aacid**worldcat\_\_20241230T203056Z--20241230T203056Z.jsonl.seekable.zst
+- Output: `data/library_holding_data.sqlite3`
 
 ```bash
 cd scripts/rarity
@@ -99,6 +106,10 @@ Special datasets:
 Aggregates all datasets, sets white pixels for every book in any of the datasets, black pixels otherwise.
 Zoomed out views contain the average, so a pixel with 50% existing books will be brightness 50%.
 
+#### Dataset `publication_date`
+
+The red in each pixel is the average publication year (minus 1800, clamped to 0-255). The green pixel is the same. The blue pixel is the ratio of books present in the dataset (255 = 100%).
+
 #### Dataset `publishers`
 
 Publishers are assigned an incrementing integer ID by unique `registrant_name`. This integer is stored in the PNG RGB: `publisherId = red * 65536 + green * 256 + blue`.
@@ -124,15 +135,8 @@ The other datasets contain the data directly from the benc file (white=exists, b
 
 Merges the statistics from the different datasets into a single file.
 
-Input:
-
-- `public/images/tiled/*/stats.json`
-
-Output:
-
-- `public/prefix-data/stats.json`
-
-Run:
+- Input: `public/images/tiled/*/stats.json`
+- Output: `public/prefix-data/stats.json`
 
 ```bash
 pnpm tsx scripts/merge-stats.ts
@@ -151,6 +155,8 @@ scripts/minify-images.sh public/images/tiled/[dataset]
 ```
 
 ## Running the main web viewer
+
+URLs and paths are configured in `src/config.ts`. The default "advanced config", stored in the URL, is configured in `src/lib/RuntimeConfiguration.ts`.
 
 Development: `pnpm run dev`
 

@@ -1,9 +1,0 @@
-- grid shader has bad precision at max zoom
-- code cleanup
-- scale indicator
-- minimap
-- docker container
-- scroll event -> cancel flight
-- overflow of publisher range (978-3-230)
-- legend
-- combination of publication date wtih other info
