@@ -1,3 +1,4 @@
+import config from "../config";
 import { fetchJson } from "./json-fetch";
 import {
   Isbn13Number,
@@ -11,7 +12,6 @@ export type TitleFetchedInfo = {
   title: string;
   creator: string;
 };
-export const DOMAIN = `https://isbn-titles.phiresky.xyz/`;
 
 export class TitleFetcher {
   cache: Map<
@@ -26,7 +26,9 @@ export class TitleFetcher {
 
     let gotten = this.cache.get(prefixStr);
     if (!gotten) {
-      gotten = fetchJson<TitleFetchedInfo[]>(DOMAIN + fname).then(
+      gotten = fetchJson<TitleFetchedInfo[]>(
+        config.titlesRoot + "/" + fname
+      ).then(
         (data) =>
           new Map(
             data.map((info) => [
@@ -35,7 +37,6 @@ export class TitleFetcher {
             ])
           )
       );
-      console.log(prefixStr, gotten);
       this.cache.set(prefixStr, gotten);
     }
     const data = await gotten;

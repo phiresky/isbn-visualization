@@ -183,5 +183,9 @@ export default {
     window.origin === "https://phiresky.github.io"
       ? "/isbn-visualization-json/prefix-data"
       : "/prefix-data",
+  titlesRoot:
+    window.origin === "https://phiresky.github.io"
+      ? "https://isbn-titles.phiresky.xyz"
+      : "/title-data",
   jsonCompression: "gzip",
 };
