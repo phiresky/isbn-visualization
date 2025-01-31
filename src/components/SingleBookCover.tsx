@@ -63,7 +63,13 @@ export const SingleBookCover = observer(function SingleBookCover({
           <EanBarcode ean={isbn} />
         </div>
       </div>
-      <div className="titleinfo">
+      <div
+        className={`titleinfo ${
+          (title?.length ?? 0 + (author?.length ?? 0)) > 40
+            ? "muchtext"
+            : "littletext"
+        }`}
+      >
         <div className={`title ${!title ? "unknown" : ""}`}>{title}</div>
         <div className={`author ${!author ? "unknown" : ""}`}>
           {author ? `by ${author}` : ""}

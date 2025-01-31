@@ -256,8 +256,14 @@ button {
   flex-grow: 1;
   text-align: center;
 }
-.single-book .author {
+.single-book .titleinfo .author {
   font-size: 0.8rem;
+}
+.single-book .titleinfo.muchtext {
+  font-size: 0.7rem;
+}
+.single-book .titleinfo.muchtext .author {
+  font-size: 0.6rem;
 }
 .single-book .unknown {
   opacity: 0.5;
