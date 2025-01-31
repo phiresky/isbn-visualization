@@ -8,6 +8,7 @@ export type RuntimeConfiguration = {
   shaderGlow: number;
   showPublisherNames: boolean;
   showGrid: boolean;
+  gridLevels: number;
   publishersColorSchema: "dark" | "hsl";
   textMinZoomLevel: number;
   textLevelCount: number;
@@ -40,12 +41,13 @@ export function defaultRuntimeConfig(dataset: string): RuntimeConfiguration {
     shaderGlow: 5,
     showPublisherNames: true,
     showGrid: true,
+    gridLevels: 2,
     publishersColorSchema: "hsl",
     textMinZoomLevel: 0.09,
     textLevelCount: 2,
     imgMinZoomLevel: 1.2,
     customShader: "",
-    gridColor: "#555555",
+    gridColor: "#666666",
     filterMinimumPublicationYear: -1,
     filterMaximumPublicationYear: -1,
     colorGradient: 6,

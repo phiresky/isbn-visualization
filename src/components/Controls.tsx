@@ -284,6 +284,14 @@ const Settings: React.FC<{ store: Store }> = observer(function Settings({
           />
         </label>
         <label className="form-row">
+          <div>Grid color:</div>
+          <input
+            type="text"
+            value={config.gridColor}
+            onChange={(e) => (config.gridColor = e.currentTarget.value)}
+          />
+        </label>
+        <label className="form-row">
           <div>Glow brightness:</div>
           <input
             type="range"
