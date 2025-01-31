@@ -37,7 +37,7 @@ export const IsbnGrid: React.FC<{ store: Store }> = observer(function IsbnGrid({
           store={store}
           thickness={2}
           z={1.1}
-          color={color}
+          color={"#333333"}
         />
       )}
       {store.runtimeConfig.gridLevels >= 3 && zoomLevel + 2 <= maxShowZoom && (
@@ -47,7 +47,7 @@ export const IsbnGrid: React.FC<{ store: Store }> = observer(function IsbnGrid({
           store={store}
           thickness={1}
           z={1.0}
-          color={color}
+          color={"#333333"}
         />
       )}
     </>

@@ -47,7 +47,7 @@ export function defaultRuntimeConfig(dataset: string): RuntimeConfiguration {
     textLevelCount: 2,
     imgMinZoomLevel: 1.2,
     customShader: "",
-    gridColor: "#666666",
+    gridColor: "#555544",
     filterMinimumPublicationYear: -1,
     filterMaximumPublicationYear: -1,
     colorGradient: 6,
