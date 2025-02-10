@@ -29,6 +29,12 @@ Then install the JS dependencies. You'll need [pnpm](https://pnpm.io/). The easi
 ```bash
 corepack enable
 pnpm install
+# run in dev mode (WARNING: perf in dev mode is worse than prod mode!)
+pnpm run dev
+# build in prod mode
+pnpm run build
+# serve from any static http server (example)
+cd dist && python3 -m http.server
 ```
 
 ## Preprocessing scripts
