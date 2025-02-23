@@ -1,13 +1,13 @@
 import { IsbnRelative, ProjectionConfig } from "./util";
 
-export type ViewParams = {
+export interface ViewParams {
   minX: number;
   minY: number;
   maxX: number;
   maxY: number;
   width: number;
   height: number;
-};
+}
 
 export type ViewParams2 = ViewParams | "visible" | "invisible";
 export function getPlanePosition(

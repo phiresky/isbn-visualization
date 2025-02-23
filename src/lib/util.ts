@@ -64,7 +64,7 @@ export function fullIsbnToRelative(isbn: IsbnStrWithChecksum): IsbnRelative {
 }
 export const isbnEANStart = 978 * 1e9;
 export const totalIsbns = 2e9;
-export type ProjectionConfig = {
+export interface ProjectionConfig {
   scale: number;
   totalIsbns: number;
   // imgWidth: number;
@@ -80,7 +80,7 @@ export type ProjectionConfig = {
     this: ProjectionConfig,
     isbnRelative: IsbnRelative
   ) => { x: number; y: number; width: number; height: number };
-};
+}
 
 export function firstIsbnInPrefix(
   prefix: IsbnPrefixWithoutDashes
@@ -108,8 +108,8 @@ export function hsl2rgb(
   s: number,
   l: number
 ): [number, number, number] {
-  let a = s * Math.min(l, 1 - l);
-  let f = (n: number, k = (n + h / 30) % 12) =>
+  const a = s * Math.min(l, 1 - l);
+  const f = (n: number, k = (n + h / 30) % 12) =>
     l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
   return [f(0), f(8), f(4)];
 }

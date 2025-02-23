@@ -200,8 +200,8 @@ function calculateTrajectory(x1: number, y1: number, x2: number, y2: number) {
 class TimeInterpolatingTrajectory implements Trajectory {
   private points: Point3D[];
   private durations: number[];
-  private offsetIndex: number = 0;
-  private offsetTime: number = 0;
+  private offsetIndex = 0;
+  private offsetTime = 0;
   public duration: number;
 
   constructor(inner: Trajectory) {
@@ -619,8 +619,8 @@ function blubRadiusToZoom(radius: number): number {
 }
 
 function toBlubSpace(dist: number, zoom: number, segmentSize: number): Point2D {
-  let radius = zoomToBlubRadius(zoom);
-  let angle = (dist / segmentSize) * Math.PI;
+  const radius = zoomToBlubRadius(zoom);
+  const angle = (dist / segmentSize) * Math.PI;
   return new Point2D(Math.cos(angle) * radius, Math.sin(angle) * radius);
 }
 
@@ -628,8 +628,8 @@ function fromBlubSpace(
   p: Point2D,
   segmentSize: number
 ): { dist: number; zoom: number } {
-  let radius = Math.sqrt(p.x ** 2 + p.y ** 2);
-  let angle = Math.atan2(p.y, p.x);
+  const radius = Math.sqrt(p.x ** 2 + p.y ** 2);
+  const angle = Math.atan2(p.y, p.x);
   return {
     dist: (angle / Math.PI) * segmentSize,
     zoom: blubRadiusToZoom(radius),

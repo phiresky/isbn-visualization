@@ -12,7 +12,7 @@ import {
 import { addIsbnGroups } from "../src/lib/prefix-data";
 import { IsbnPrefixWithDashes } from "../src/lib/util";
 
-type JsonRecord = {
+interface JsonRecord {
   aacid: string;
   metadata: {
     id: string;
@@ -26,7 +26,7 @@ type JsonRecord = {
       ];
     };
   };
-};
+}
 
 async function go() {
   const fname = process.argv[2];
@@ -66,7 +66,7 @@ async function go() {
 
   let nextPublisherId = 1;
   let nextGroupId = 1;
-  const publishersIdCache: Map<string, number> = new Map();
+  const publishersIdCache = new Map<string, number>();
   function countUniquePublishers(map: InfoMap): Set<string> {
     const out = new Set<string>();
     for (const [digit, info] of Object.entries(map) as [Digit, PrefixInfo][]) {

@@ -30,7 +30,7 @@ export async function processPublishersData(
     }
     if (relativeIsbn > curPrefixEnd) {
       const isbn = relativeToIsbnPrefix(relativeIsbn);
-      let data = getGroupHierarchy(publishersData, isbn);
+      const data = getGroupHierarchy(publishersData, isbn);
       if (typeof data === "function") {
         throw Error(
           "found lazy data in full data dump from /data, this is impossible"
@@ -49,8 +49,8 @@ export async function processPublishersData(
         continue;
       }
       color = null;
-      const groupId = data.outers?.[0].info?.[0].numericId;
-      const publisherId = data.outers?.[1]?.info?.[0].numericId;
+      const groupId = data.outers[0].info?.[0].numericId;
+      const publisherId = data.outers[1]?.info?.[0].numericId;
       // publisherId to RGB
       if (publisherId) {
         color = [0, 0, 0];

@@ -13,7 +13,7 @@ import {
 import { bookshelfConfig } from "../../src/projections/bookshelf";
 
 export class StatsAggregator {
-  statistics: Map<IsbnPrefixWithoutDashes, Record<string, number>> = new Map();
+  statistics = new Map<IsbnPrefixWithoutDashes, Record<string, number>>();
 
   addStatistic(isbn: IsbnRelative, obj: Record<string, number>) {
     const isbnFull = relativeToIsbnPrefix(isbn);
@@ -35,8 +35,8 @@ export class StatsAggregator {
   }
 }
 export class ImageTiler {
-  images: Map<number, ImageTile> = new Map();
-  written: Set<number> = new Set();
+  images = new Map<number, ImageTile>();
+  written = new Set<number>();
   config: ProjectionConfig;
   totalBooksPerPixel: number;
   // only set for first zoom level

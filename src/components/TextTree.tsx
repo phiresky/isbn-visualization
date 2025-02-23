@@ -46,7 +46,7 @@ const GroupShowInner: React.FC<{
           `resolvePublishers(${props.prefix})`,
           g(jsonRoot)
         );
-      if (g && g.children && "lazy" in g.children) {
+      if (g?.children && "lazy" in g.children) {
         await resolveOnePrefixLevel(g, jsonRoot);
       }
       setGroupO(g);
@@ -72,7 +72,7 @@ const GroupShowInner: React.FC<{
               key={props.prefix + i}
               prefix={isbnPrefixAppend(
                 (groupO?.info?.[0].prefix
-                  ? groupO.info?.[0].prefix + "-"
+                  ? groupO.info[0].prefix + "-"
                   : props.prefix) as IsbnPrefixWithDashes,
                 String(i)
               )}
@@ -106,8 +106,7 @@ const RenderGroup: React.FC<{
   const plainPrefix = removeDashes(prefix);
   const isSingleBook = plainPrefix.length === 11;
   // console.log("RenderGroup " + prefix);
-  if (!view.textOpacity || ((!group || !group.children) && !isSingleBook))
-    return null;
+  if (!view.textOpacity || (!group?.children && !isSingleBook)) return null;
   const smSize = Math.min(width, height);
   const vertical = height > width;
   const showVertical = store.runtimeConfig.groupTextVertical || isSingleBook;
@@ -190,13 +189,13 @@ function ChildGroupNames(props: {
     return null;
   }
   const children = props.group.children;
-  const prefixWithAppendedDash = props.group?.info?.[0].prefix
-    ? props.group.info?.[0].prefix + "-"
+  const prefixWithAppendedDash = props.group.info?.[0].prefix
+    ? props.group.info[0].prefix + "-"
     : props.prefix;
   return (
     <div>
       {DIGITS.map((digit) => {
-        const child = children?.[digit];
+        const child = children[digit];
         return (
           <div
             key={digit}

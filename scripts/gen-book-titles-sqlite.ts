@@ -3,7 +3,7 @@ import { createReadStream } from "fs";
 import fs from "fs/promises";
 import readline from "readline";
 import zlib from "zlib";
-type Record = {
+interface Record {
   _index: "aarecords__9";
   _id: string;
   _source: {
@@ -22,7 +22,7 @@ type Record = {
       };
     };
   };
-};
+}
 
 async function connect(dbName: string) {
   const db = sqlite(dbName);
@@ -47,7 +47,7 @@ async function load(dbName: string, dataDir: string) {
   const db = await connect(dbName);
   // readdir, find all dataDir/aarecords__*.json.gz
   const files = (await fs.readdir(dataDir)).filter((f) =>
-    f.match(/^aarecords__[^.]+\.json\.gz$/)
+    /^aarecords__[^.]+\.json\.gz$/.exec(f)
   );
   for (const file of files) {
     console.log(`Loading ${file}`);

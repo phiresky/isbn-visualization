@@ -34,11 +34,11 @@ import {
 } from "./util";
 import { ViewParams } from "./view-utils";
 
-type RarityInfo = {
+interface RarityInfo {
   holdingCount: number;
   editionCount: number;
   bookCount: number;
-};
+}
 export class Store {
   view: ViewParams;
   camera?: OrthographicCamera;
@@ -59,7 +59,7 @@ export class Store {
       } = {
     type: "todo",
   };
-  #imageLoader: Map<string, ImageLoader> = new Map();
+  #imageLoader = new Map<string, ImageLoader>();
   rootPrefixInfo: LazyPrefixInfo = {
     children: { lazy: "root.json" },
     totalChildren: 0,
@@ -69,7 +69,7 @@ export class Store {
   projection: ProjectionConfig;
   externalSearchEngines: { name: string; url: string }[] = [];
   shaderUtil = new ShaderUtil(this);
-  animationRequestId: number = 0;
+  animationRequestId = 0;
   runtimeConfig: RuntimeConfiguration;
 
   /** numeric id of publisher to highlight */
@@ -82,7 +82,7 @@ export class Store {
     prefixStart: IsbnPrefixWithoutDashes;
     prefixEnd: IsbnPrefixWithoutDashes;
   } | null = null;
-  resetZoomButton: boolean = false;
+  resetZoomButton = false;
   shaderError = "";
   titleFetcher = new TitleFetcher(this);
   constructor(projectionConfig: ProjectionConfig) {
@@ -106,7 +106,9 @@ export class Store {
     };
     const params = new URLSearchParams(window.location.search);
     this.addExternalSearchEngines(params);
-    autorun(() => saveRuntimeConfigToURL(this.runtimeConfig));
+    autorun(() => {
+      saveRuntimeConfigToURL(this.runtimeConfig);
+    });
   }
   get floatZoomFactor() {
     return this.projection.pixelWidth / this.view.width;
@@ -142,8 +144,7 @@ export class Store {
     return r;
   }
 
-  cachedGoogleBooks: Map<IsbnStrWithChecksum, GoogleBooksItem | null> =
-    new Map();
+  cachedGoogleBooks = new Map<IsbnStrWithChecksum, GoogleBooksItem | null>();
   async googleBooksQueryIsbn(isbn: IsbnStrWithChecksum) {
     const cached = this.cachedGoogleBooks.get(isbn);
     if (cached) return Promise.resolve(cached);

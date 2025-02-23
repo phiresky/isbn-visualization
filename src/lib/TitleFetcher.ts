@@ -7,17 +7,17 @@ import {
   splitNameJson,
 } from "./util";
 
-export type TitleFetchedInfo = {
+export interface TitleFetchedInfo {
   isbn13: Isbn13Number;
   title: string;
   creator: string;
-};
+}
 
 export class TitleFetcher {
-  cache: Map<
+  cache = new Map<
     IsbnPrefixWithoutDashes,
     Promise<Map<IsbnStrWithChecksum, TitleFetchedInfo>>
-  > = new Map();
+  >();
   constructor(private store: Store) {}
   async fetchTitle(
     title: IsbnStrWithChecksum

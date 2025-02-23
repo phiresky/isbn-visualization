@@ -29,7 +29,7 @@ export const Legend: React.FC<{ store: Store }> = observer(function Legend(
 
   return (
     <div>
-      <Select<{ value: number }, false>
+      <Select<{ value: number }>
         isSearchable={false}
         value={options.find(
           (o) => o.value === props.store.runtimeConfig.colorGradient

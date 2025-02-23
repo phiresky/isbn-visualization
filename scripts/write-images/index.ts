@@ -3,21 +3,19 @@ import { ImageTiler, StatsAggregator } from "./ImageTiler";
 import * as modules from "./modules";
 import { loadSparseDataToMemory } from "./modules/single-sparse";
 
-export interface IsbnData {
-  [key: string]: Uint32Array;
-}
+export type IsbnData = Record<string, Uint32Array>;
 
 /** sharp / vips uses a channel max of 1e16 for float32 images for some reason */
 export const channelMax = 65535;
 
 /** info of one tile of a tiled image */
-export type ImageTile = {
+export interface ImageTile {
   x: number;
   y: number;
   width: number;
   height: number;
   img: Float32Array;
-};
+}
 
 export type ProcessSingleZoom = (tiler: ImageTiler) => Promise<void>;
 async function processAllZoomLevels(

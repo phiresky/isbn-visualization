@@ -11,7 +11,7 @@ export const IsbnGrid: React.FC<{ store: Store }> = observer(function IsbnGrid({
   const zoomLevel = computed(() => {
     const zoom = store.floatZoomFactor;
 
-    let zoomLevel = Math.round(Math.log10(zoom) * 2) - 1;
+    const zoomLevel = Math.round(Math.log10(zoom) * 2) - 1;
     if (zoomLevel < 0) return 0;
     const maxZoom = 6;
     if (zoomLevel > maxZoom) return maxZoom;

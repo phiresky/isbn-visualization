@@ -1,7 +1,7 @@
 import config from "../config";
 
 /** Any value not set is set according to the dataset-specific defaults. */
-export type RuntimeConfiguration = {
+export interface RuntimeConfiguration {
   /**
    * The identifier of the dataset to display. Also affects the defaults of all the other options.
    * Datasets are defined in config.ts (datasetOptions).
@@ -53,7 +53,7 @@ export type RuntimeConfiguration = {
   jsonRoot: string;
   /** The URL prefix of the json files containing book titles (if any) */
   titlesRoot: string;
-};
+}
 
 const defaultDataset = "publication_date";
 function isMobile() {

@@ -214,7 +214,9 @@ const IsbnInfo = observer(function IsbnInfo(props: { store: Store }) {
         </button>
         <button
           className="float-button"
-          onClick={() => props.store.zoomAnimateToHighlight()}
+          onClick={() => {
+            props.store.zoomAnimateToHighlight();
+          }}
         >
           Fly to book
         </button>
@@ -265,8 +267,8 @@ function GroupInfo({
       Publisher {obj.publisher}:{" "}
       <i>
         {computedPublisherInfo?.info &&
-        computedPublisherInfo?.info?.[0].source === "isbngrp"
-          ? computedPublisherInfo?.info?.[0].registrant_name
+        computedPublisherInfo.info[0].source === "isbngrp"
+          ? computedPublisherInfo.info[0].registrant_name
           : "unknown"}
       </i>{" "}
       {(computedPublisherInfo?.info?.length ?? 0) > 1

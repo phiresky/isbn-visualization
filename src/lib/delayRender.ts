@@ -15,7 +15,9 @@ clearT();
 export function useDelay() {
   const [yes, setYes] = useState(false);
   useEffect(() => {
-    const fn = () => setYes(true);
+    const fn = () => {
+      setYes(true);
+    };
     pending.push(fn);
     return () => {
       const inx = pending.indexOf(fn);

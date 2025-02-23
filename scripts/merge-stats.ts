@@ -7,7 +7,7 @@ for (const dataset of ["all", "publication_date", "rarity", "publishers"]) {
   const f = JSON.parse(
     readFileSync(`public/images/tiled/${dataset}/stats.json`, "utf-8")
   ) as StatsMap;
-  for (let k of Object.keys(f) as IsbnPrefixWithoutDashes[]) {
+  for (const k of Object.keys(f) as IsbnPrefixWithoutDashes[]) {
     if (out[k]) mergeStats(out[k], f[k]!);
     else out[k] = f[k];
   }

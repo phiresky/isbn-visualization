@@ -20,7 +20,8 @@ export class StatsCalculator {
       const leftDigit = left[0];
       const rightDigit = right[0];
       if (leftDigit === rightDigit) {
-        return recurse(prefix + left[0], left.slice(1), right.slice(1));
+        recurse(prefix + left[0], left.slice(1), right.slice(1));
+        return;
       }
       if (leftDigit > rightDigit) {
         throw Error("leftDigit > rightDigit");

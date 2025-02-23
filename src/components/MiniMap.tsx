@@ -332,8 +332,12 @@ const RenderBlock: React.FC<{ block: BlockConfig; store: Store }> = observer(
 
     return (
       <g
-        onPointerEnter={() => setHovered(pos)}
-        onPointerLeave={() => setHovered(null)}
+        onPointerEnter={() => {
+          setHovered(pos);
+        }}
+        onPointerLeave={() => {
+          setHovered(null);
+        }}
         onClick={() => {
           if (dragDistance > 4) return;
           const start = firstIsbnInPrefix(isbnPrefixFromRelative(pos));

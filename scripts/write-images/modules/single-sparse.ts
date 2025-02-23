@@ -44,7 +44,7 @@ export async function loadSparseDataToMemory(): Promise<IsbnData> {
       .on("data", (chunk: Buffer) => chunks.push(chunk))
       .on("end", async () => {
         const data = Buffer.concat(chunks);
-        const isbnData = bencode.decode(data) as { [key: string]: Uint8Array };
+        const isbnData = bencode.decode(data) as Record<string, Uint8Array>;
         // Convert Uint8Array to Uint32Array
         const isbnData2: IsbnData = {};
         for (const [k, v] of Object.entries(isbnData)) {

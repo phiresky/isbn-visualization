@@ -30,21 +30,21 @@ export type PrefixInfoData =
       prefix: IsbnPrefixWithDashes;
       color?: string;
     };
-export type PrefixInfo = {
+export interface PrefixInfo {
   children?: InfoMap;
   info?: PrefixInfoData[];
   totalChildren: number;
-};
+}
 export type InfoMap = Partial<Record<Digit, PrefixInfo>>;
 
-export type NeedLazyLoad = {
+export interface NeedLazyLoad {
   lazy: string | Promise<void>;
-};
-export type LazyPrefixInfo = {
+}
+export interface LazyPrefixInfo {
   children?: LazyInfoMap;
   info?: PrefixInfoData[];
   totalChildren: number;
-};
+}
 export type LazyInfoMap = NeedLazyLoad | Partial<Record<Digit, LazyPrefixInfo>>;
 
 export function addRecord(
@@ -57,7 +57,7 @@ export function addRecord(
     if (_digit === "-") continue;
     const digit = _digit as Digit;
     layer[digit] ??= { totalChildren: 0 };
-    let target = layer[digit];
+    const target = layer[digit];
     const isLast = i === prefix.length - 1;
     if (isLast) {
       target.info ??= [];

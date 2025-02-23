@@ -54,9 +54,9 @@ export const Controls: React.FC<{ store: Store }> = observer(function Controls({
             </button>
 
             <button
-              onClick={() =>
-                store.switchDataset(store.runtimeConfig.dataset, true)
-              }
+              onClick={() => {
+                store.switchDataset(store.runtimeConfig.dataset, true);
+              }}
             >
               Reset Settings
             </button>
@@ -152,14 +152,14 @@ const BookOption: React.FC<OptionProps<MinimalGoogleBooksItem>> = (p) => {
   );
 };
 
-export type MinimalGoogleBooksItem = {
+export interface MinimalGoogleBooksItem {
   id: string;
   volumeInfo: {
     title?: string;
     authors?: string[];
     industryIdentifiers?: GoogleBooksItem["volumeInfo"]["industryIdentifiers"];
   };
-};
+}
 const MainStuff: React.FC<{ store: Store }> = observer(function MainStuff({
   store,
 }) {

@@ -22,7 +22,7 @@ export function loadPublicationDateData(dbName: string) {
   const blockSize = 10000;
   const prefixLength = 12 - Math.log10(blockSize);
   const dirSegmentLength = 3;
-  let i = 0;
+  const i = 0;
   const maxOclcNumber = db
     .prepare("select max(oclc_number) from isbn_data")
     .pluck()

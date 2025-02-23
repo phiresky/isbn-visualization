@@ -114,11 +114,11 @@ export class DetailLevelObservable {
     return this.#imageRelativeLevel(-1);
   }
 }
-export type DetailLevel = {
+export interface DetailLevel {
   container: boolean;
   text: boolean;
   children: boolean;
-};
+}
 export function getScale(
   rect: { xEnd: number; xStart: number; yEnd: number; yStart: number },
   store: Store,

@@ -2,17 +2,17 @@ import { MinimalGoogleBooksItem } from "./components/Controls";
 import { RuntimeConfiguration } from "./lib/RuntimeConfiguration";
 import { IsbnStrWithChecksum } from "./lib/util";
 
-export type DatasetOption = {
+export interface DatasetOption {
   id: string;
   name: string;
   description?: string;
   runtimeConfig?: Partial<RuntimeConfiguration>;
   colorSchemeMeaning?: ColorSchemeMeaning | null;
-};
-export type ColorSchemeMeaning = {
+}
+export interface ColorSchemeMeaning {
   title: string;
   markers: { value: number; label: string }[];
-};
+}
 export const defaultColorSchemeMeaning = {
   title: "Books",
   markers: [

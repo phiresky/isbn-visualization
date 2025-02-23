@@ -12,7 +12,7 @@ import { IsbnPrefixRelative } from "./util";
 export class ImageLoader {
   path: string;
   loader: TextureLoader = new TextureLoader();
-  textures: Map<IsbnPrefixRelative, Texture> = new Map();
+  textures = new Map<IsbnPrefixRelative, Texture>();
   existing: Promise<Set<IsbnPrefixRelative>>;
   hasChildren: Promise<Set<IsbnPrefixRelative>>;
   static maxZoomPrefixLength = 4; // images with nearest zoom have prefix length 4

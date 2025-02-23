@@ -102,14 +102,14 @@ export function addIsbnGroups(
     }
   }
 }
-export type LazyPrefixInfoWithParents = {
+export interface LazyPrefixInfoWithParents {
   outers: LazyPrefixInfo[];
   inner: LazyPrefixInfo | null;
-};
+}
 export function getGroupHierarchy(
   rootPrefixInfo: LazyPrefixInfo,
   prefix: IsbnPrefixWithDashes | IsbnPrefixWithoutDashes,
-  allowFetch: boolean = true
+  allowFetch = true
 ):
   | LazyPrefixInfoWithParents
   | ((prefixRoot: string) => Promise<LazyPrefixInfoWithParents>) {

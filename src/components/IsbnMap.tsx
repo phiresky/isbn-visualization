@@ -90,7 +90,9 @@ export const IsbnMap: React.FC<{ config: ProjectionConfig }> = observer(
             minZoom={0.5}
             maxZoom={20000}
             touches={{ ONE: THREE.TOUCH.PAN, TWO: THREE.TOUCH.DOLLY_PAN }}
-            onChange={(e) => store.updateView(e)}
+            onChange={(e) => {
+              store.updateView(e);
+            }}
           />
           {/*<ambientLight intensity={3} />*/}
           <Plane
@@ -111,7 +113,9 @@ export const IsbnMap: React.FC<{ config: ProjectionConfig }> = observer(
             }}
             onPointerUp={(e: ThreeEvent<PointerEvent>) => {
               isPointerDown = -1;
-              if ((e.nativeEvent.target as Element)?.tagName !== "CANVAS")
+              if (
+                (e.nativeEvent.target as Element | null)?.tagName !== "CANVAS"
+              )
                 return;
               if (pointerMoved < 4) {
                 e.stopPropagation();
@@ -131,12 +135,16 @@ export const IsbnMap: React.FC<{ config: ProjectionConfig }> = observer(
               const x = e.point.x + props.config.pixelWidth / 2;
               const y = props.config.pixelHeight / 2 - e.point.y;
               if (isPointerDown === 2) {
-                if ((e.nativeEvent.target as Element)?.tagName !== "CANVAS")
+                if (
+                  (e.nativeEvent.target as Element | null)?.tagName !== "CANVAS"
+                )
                   return;
                 store.updateHighlightedStats(x, y, "end");
               }
               if (isPointerDown === -1 && e.pointerType === "mouse") {
-                if ((e.nativeEvent.target as Element)?.tagName !== "CANVAS")
+                if (
+                  (e.nativeEvent.target as Element | null)?.tagName !== "CANVAS"
+                )
                   return;
                 e.stopPropagation();
 

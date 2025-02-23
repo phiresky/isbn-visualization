@@ -1,10 +1,10 @@
 import { IsbnStrWithChecksum } from "./util";
 
-type GoogleBooksResponse = {
+interface GoogleBooksResponse {
   items?: GoogleBooksItem[];
   totalItems: number;
-};
-export type GoogleBooksItem = {
+}
+export interface GoogleBooksItem {
   kind: string;
   id: string;
   etag: string;
@@ -31,7 +31,7 @@ export type GoogleBooksItem = {
     };
     pageCount: number;
     printType: string;
-    categories: Array<string>;
+    categories: string[];
     averageRating: number;
     ratingsCount: number;
     maturityRating: string;
@@ -74,7 +74,7 @@ export type GoogleBooksItem = {
   searchInfo: {
     textSnippet: string;
   };
-};
+}
 
 export async function googleBooksQuery(query: string) {
   const r = await fetch(

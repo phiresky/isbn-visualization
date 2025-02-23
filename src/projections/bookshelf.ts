@@ -55,8 +55,8 @@ export function bookshelfConfig({
       let currentRectHeight = startRectHeight;
       let swapXy = startSwapXy;
       for (const digit of digits) {
-        let innerXofs = (+digit % gridW) / gridW;
-        let innerYofs = Math.floor(+digit / gridW) / gridH;
+        const innerXofs = (+digit % gridW) / gridW;
+        const innerYofs = Math.floor(+digit / gridW) / gridH;
         if (swapXy) {
           y += innerXofs * currentRectHeight;
           x += innerYofs * currentRectWidth;

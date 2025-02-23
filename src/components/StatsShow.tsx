@@ -163,7 +163,7 @@ function StatsSummary(props: {
       Stats for <b>{props.prefixStart}</b>
       {props.prefixStart !== props.prefixEnd ? <> to {props.prefixEnd}</> : ""}:
       <br />
-      <b>Known books:</b> {r.dataset_all?.toLocaleString()}
+      <b>Known books:</b> {r.dataset_all.toLocaleString()}
       <br />
       <b>dataset_md5:</b> {r.dataset_md5 ?? 0} (
       {(((r.dataset_md5 ?? 0) / (r.dataset_all ?? 0)) * 100).toFixed(2)}

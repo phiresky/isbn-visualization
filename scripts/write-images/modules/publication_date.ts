@@ -92,7 +92,7 @@ async function processPublicationData(
 async function postprocessPixels(image: ImageTile, totalBooksPerPixel: number) {
   for (let i = 0; i < image.img.length; i += 3) {
     let publicationDate = image.img[i];
-    let bookCount = image.img[i + 1];
+    const bookCount = image.img[i + 1];
     // verify all are ints
     if (!Number.isInteger(publicationDate)) {
       throw new Error("non-integer value");
