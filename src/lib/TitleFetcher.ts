@@ -1,5 +1,5 @@
-import config from "../config";
 import { fetchJson } from "./json-fetch";
+import { Store } from "./Store";
 import {
   Isbn13Number,
   IsbnPrefixWithoutDashes,
@@ -18,6 +18,7 @@ export class TitleFetcher {
     IsbnPrefixWithoutDashes,
     Promise<Map<IsbnStrWithChecksum, TitleFetchedInfo>>
   > = new Map();
+  constructor(private store: Store) {}
   async fetchTitle(
     title: IsbnStrWithChecksum
   ): Promise<TitleFetchedInfo | undefined> {
@@ -27,7 +28,7 @@ export class TitleFetcher {
     let gotten = this.cache.get(prefixStr);
     if (!gotten) {
       gotten = fetchJson<TitleFetchedInfo[]>(
-        config.titlesRoot + "/" + fname
+        this.store.runtimeConfig.titlesRoot + "/" + fname
       ).then(
         (data) =>
           new Map(

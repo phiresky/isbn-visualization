@@ -175,17 +175,5 @@ export default {
     },
     { name: "Worldcat", url: "https://worldcat.org/isbn/%s" },
   ],
-  imagesRoot:
-    window.origin === "https://phiresky.github.io"
-      ? "/isbn-visualization-images/tiled"
-      : "/images/tiled",
-  jsonRoot:
-    window.origin === "https://phiresky.github.io"
-      ? "/isbn-visualization-json/prefix-data"
-      : "/prefix-data",
-  titlesRoot:
-    // window.origin === "https://phiresky.github.io" ?
-      "https://isbn-titles.phiresky.xyz",
-      //: "/title-data",
   jsonCompression: "gzip",
 };

@@ -87,7 +87,7 @@ export class Store {
   } | null = null;
   resetZoomButton: boolean = false;
   shaderError = "";
-  titleFetcher = new TitleFetcher();
+  titleFetcher = new TitleFetcher(this);
   constructor(projectionConfig: ProjectionConfig) {
     this.projection = projectionConfig;
     this.runtimeConfig = loadRuntimeConfigFromURL();
