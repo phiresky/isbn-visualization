@@ -1,5 +1,5 @@
 import bencode from "bencode";
-import { createReadStream } from "fs";
+import { createReadStream } from "node:fs";
 import { ZSTDDecompress } from "simple-zstd";
 import { IsbnData, ProcessSingleZoom } from "..";
 import { IsbnRelative } from "../../../src/lib/util";

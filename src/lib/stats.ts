@@ -1,10 +1,12 @@
 import { fetchJson } from "./json-fetch";
+import { Store } from "./Store";
 import { IsbnPrefixWithoutDashes } from "./util";
 
 export type StatsMap = Partial<Record<IsbnPrefixWithoutDashes, BlockStats>>;
 export type BlockStats = Partial<Record<string, number>>;
 export class StatsCalculator {
   #data: StatsMap | null = null;
+  constructor(private store: Store) {}
   #getRanges(
     startPrefix: IsbnPrefixWithoutDashes,
     endPrefix: IsbnPrefixWithoutDashes
@@ -38,8 +40,9 @@ export class StatsCalculator {
   }
   async #fetchStats(): Promise<StatsMap> {
     if (!this.#data) {
-      const { default: config } = await import("../config");
-      this.#data = await fetchJson<StatsMap>(`${config.jsonRoot}/stats.json`);
+      this.#data = await fetchJson<StatsMap>(
+        `${this.store.runtimeConfig.jsonRoot}/stats.json`
+      );
     }
     return this.#data;
   }

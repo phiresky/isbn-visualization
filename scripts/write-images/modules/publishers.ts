@@ -31,7 +31,11 @@ export async function processPublishersData(
     if (relativeIsbn > curPrefixEnd) {
       const isbn = relativeToIsbnPrefix(relativeIsbn);
       let data = getGroupHierarchy(publishersData, isbn);
-      if (typeof data === "function") data = await data();
+      if (typeof data === "function") {
+        throw Error(
+          "found lazy data in full data dump from /data, this is impossible"
+        );
+      }
       if (data.outers.length >= 2) {
         const pr = data.outers[1]?.info?.[0].prefix;
         if (!pr) throw Error("not handled");

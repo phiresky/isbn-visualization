@@ -29,14 +29,14 @@ for (let x = 1; x <= 10; x++) {
 }
 
 export async function resolveOnePrefixLevel(
-  prefix: LazyPrefixInfo
+  prefix: LazyPrefixInfo,
+  fetchRoot: string
 ): Promise<{ children?: InfoMap; info?: PrefixInfoData[] }> {
   if (prefix.children && "lazy" in prefix.children) {
     if (typeof prefix.children.lazy === "string") {
       const fname = prefix.children.lazy;
       prefix.children.lazy = (async () => {
-        const { default: config } = await import("../config");
-        const map = await fetchJson<LazyInfoMap>(`${config.jsonRoot}/${fname}`);
+        const map = await fetchJson<LazyInfoMap>(`${fetchRoot}/${fname}`);
         prefix.children = map;
       })();
     }
@@ -110,7 +110,9 @@ export function getGroupHierarchy(
   rootPrefixInfo: LazyPrefixInfo,
   prefix: IsbnPrefixWithDashes | IsbnPrefixWithoutDashes,
   allowFetch: boolean = true
-): LazyPrefixInfoWithParents | (() => Promise<LazyPrefixInfoWithParents>) {
+):
+  | LazyPrefixInfoWithParents
+  | ((prefixRoot: string) => Promise<LazyPrefixInfoWithParents>) {
   const infos: LazyPrefixInfo[] = [];
   let cur: LazyPrefixInfo = rootPrefixInfo;
   for (const c of prefix as Iterable<Digit | "-">) {
@@ -119,11 +121,11 @@ export function getGroupHierarchy(
     if (cur.children) {
       if ("lazy" in cur.children) {
         if (allowFetch) {
-          return async () => {
-            await resolveOnePrefixLevel(cur);
+          return async (fetchRoot: string) => {
+            await resolveOnePrefixLevel(cur, fetchRoot);
             const res = getGroupHierarchy(rootPrefixInfo, prefix);
             // flatten
-            if (typeof res === "function") return await res();
+            if (typeof res === "function") return await res(fetchRoot);
             return res;
           };
         } else {
@@ -139,8 +141,12 @@ export function getGroupHierarchy(
 export function getGroup(
   rootPrefixInfo: LazyPrefixInfo,
   prefix: IsbnPrefixWithDashes
-): LazyPrefixInfo | null | (() => Promise<LazyPrefixInfo | null>) {
+):
+  | LazyPrefixInfo
+  | null
+  | ((fetchRoot: string) => Promise<LazyPrefixInfo | null>) {
   const h = getGroupHierarchy(rootPrefixInfo, prefix);
-  if (typeof h === "function") return () => h().then((h) => h.inner);
+  if (typeof h === "function")
+    return (fetchRoot: string) => h(fetchRoot).then((h) => h.inner);
   return h.inner;
 }

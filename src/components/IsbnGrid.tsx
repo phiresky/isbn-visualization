@@ -79,7 +79,7 @@ const IsbnGridLevel: React.FC<{
   const { position } = useLocalObservable(
     () => ({
       get position() {
-        let position = [
+        let position: [number, number, number] = [
           store.projection.pixelWidth / 2,
           -store.projection.pixelHeight / 2,
           props.z,
@@ -110,7 +110,6 @@ const IsbnGridLevel: React.FC<{
       rotation={[Math.PI / 2, 0, 0]}
       fadeDistance={1000}
       // cellThickness={2}
-      gridOffset={[0, 0]}
     />
   );
 });

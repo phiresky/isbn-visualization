@@ -1,7 +1,4 @@
-import {
-  OrbitControlsChangeEvent,
-  OrbitControlsProps,
-} from "@react-three/drei";
+import { OrbitControlsChangeEvent } from "@react-three/drei";
 import * as isbnlib from "isbn3";
 import { autorun, makeAutoObservable, observable, runInAction } from "mobx";
 import { createTransformer } from "mobx-utils";
@@ -45,8 +42,8 @@ type RarityInfo = {
 export class Store {
   view: ViewParams;
   camera?: OrthographicCamera;
-  orbitControls?: OrbitControlsProps["ref"] | null = null;
-  statsCalculator = new StatsCalculator();
+  orbitControls?: OrbitControlsChangeEvent["target"] | null = null;
+  statsCalculator = new StatsCalculator(this);
   minimapHoveredCell: string | null = null;
 
   highlightedIsbn:
@@ -132,7 +129,7 @@ export class Store {
   imageLoader(dataset: string) {
     let l = this.#imageLoader.get(dataset);
     if (!l) {
-      l = new ImageLoader(config.imagesRoot, dataset, this);
+      l = new ImageLoader(this.runtimeConfig.imagesRoot, dataset, this);
       this.#imageLoader.set(dataset, l);
     }
     return l;
@@ -191,7 +188,7 @@ export class Store {
       //groupInfo().then((info) => (this.highlightedGroupInfo = info.outers));
       if (oldOne !== relativeIsbn)
         this.debounceFetchGroupData(() =>
-          groupInfo().then((info) => {
+          groupInfo(this.runtimeConfig.jsonRoot).then((info) => {
             if (this.highlightedPublisher)
               this.highlightedPublisher.data = info.outers;
           })
@@ -263,7 +260,7 @@ export class Store {
       ).outers;
       //groupInfo().then((info) => (this.highlightedGroupInfo = info.outers));
       this.debounceFetchGroupData(() =>
-        groupInfo().then((info) => {
+        groupInfo(this.runtimeConfig.jsonRoot).then((info) => {
           if (this.highlightedIsbn.type === "done")
             this.highlightedIsbn.groupInfo = info.outers;
         })
@@ -338,6 +335,7 @@ export class Store {
     camera.position.x = targetX;
     camera.position.y = targetY;
     // if (position.zoom) camera.zoom = position.zoom;
+    if (!this.orbitControls) return;
     this.orbitControls.target.x = camera.position.x;
     this.orbitControls.target.y = camera.position.y;
     camera.updateProjectionMatrix();
@@ -367,6 +365,7 @@ export class Store {
       camera.position.x = position.x;
       camera.position.y = position.y;
       camera.zoom = maxZoom / position.z;
+      if (!this.orbitControls) return;
       this.orbitControls.target.x = camera.position.x;
       this.orbitControls.target.y = camera.position.y;
       camera.updateProjectionMatrix();

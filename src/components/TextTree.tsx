@@ -40,13 +40,14 @@ const GroupShowInner: React.FC<{
     (async () => {
       // resolve group plus one child level
       let g = getGroup(props.store.rootPrefixInfo, props.prefix);
+      const jsonRoot = props.store.runtimeConfig.jsonRoot;
       if (typeof g === "function")
         g = await props.store.trackAsyncProgress(
           `resolvePublishers(${props.prefix})`,
-          g()
+          g(jsonRoot)
         );
       if (g && g.children && "lazy" in g.children) {
-        await resolveOnePrefixLevel(g);
+        await resolveOnePrefixLevel(g, jsonRoot);
       }
       setGroupO(g);
     })();

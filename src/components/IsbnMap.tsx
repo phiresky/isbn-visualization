@@ -1,9 +1,4 @@
-import {
-  OrbitControls,
-  OrbitControlsChangeEvent,
-  OrthographicCamera,
-  Plane,
-} from "@react-three/drei";
+import { OrbitControls, OrthographicCamera, Plane } from "@react-three/drei";
 import { Canvas, ThreeEvent } from "@react-three/fiber";
 import * as isbnlib from "isbn3";
 import { observer } from "mobx-react-lite";
@@ -95,7 +90,7 @@ export const IsbnMap: React.FC<{ config: ProjectionConfig }> = observer(
             minZoom={0.5}
             maxZoom={20000}
             touches={{ ONE: THREE.TOUCH.PAN, TWO: THREE.TOUCH.DOLLY_PAN }}
-            onChange={(e: OrbitControlsChangeEvent) => store.updateView(e)}
+            onChange={(e) => store.updateView(e)}
           />
           {/*<ambientLight intensity={3} />*/}
           <Plane
