@@ -11,7 +11,8 @@
     "types": ["vite/client"],
     "noEmit": true,
     "isolatedModules": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "checkJs": true
   },
   "exclude": ["scripts/rarity", "node_modules/**", "data"]
 }

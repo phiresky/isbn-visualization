@@ -38,7 +38,7 @@ const GroupShowInner: React.FC<{
   const groupPrefix = removeDashes(props.prefix);
   const [hasChildren, setHasChildren] = useState(false);
   useEffect(() => {
-    (async () => {
+    void (async () => {
       setHasChildren(
         (
           await Promise.all(

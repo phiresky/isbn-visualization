@@ -22,11 +22,6 @@ export function loadPublicationDateData(dbName: string) {
   const blockSize = 10000;
   const prefixLength = 12 - Math.log10(blockSize);
   const dirSegmentLength = 3;
-  const i = 0;
-  const maxOclcNumber = db
-    .prepare("select max(oclc_number) from isbn_data")
-    .pluck()
-    .get() as number;
   for (let isbn = 0; isbn < totalIsbns; isbn += blockSize) {
     const first = relativeToFullIsbn(isbn as IsbnRelative);
     const next = relativeToFullIsbn((isbn + blockSize) as IsbnRelative);

@@ -99,7 +99,6 @@ export const IsbnMap: React.FC<{ config: ProjectionConfig }> = observer(
             position={[0, 0, 0]}
             material={transparent}
             args={[props.config.pixelWidth, props.config.pixelHeight]}
-            onClick={(e: ThreeEvent<PointerEvent>) => {}}
             onPointerDown={(e: ThreeEvent<PointerEvent>) => {
               cancelAnimationFrame(store.animationRequestId);
               pointerMoved = 0;

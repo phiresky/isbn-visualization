@@ -57,11 +57,11 @@ export function loadPublicationDateData(
   return isbns;
 }
 
-export default async function rarityModule(
+export default function rarityModule(
   stats: StatsAggregator,
-): Promise<ProcessSingleZoom> {
+): ProcessSingleZoom {
   const dataset = loadPublicationDateData(
-    process.env.INPUT_HOLDING_SQLITE || "data/library_holding_data.sqlite3",
+    process.env.INPUT_HOLDING_SQLITE ?? "data/library_holding_data.sqlite3",
     stats,
   );
   return (tiler) => processPublicationData(tiler, dataset);
@@ -89,7 +89,7 @@ async function processPublicationData(
   }
 }
 
-async function postprocessPixels(image: ImageTile, totalBooksPerPixel: number) {
+function postprocessPixels(image: ImageTile, totalBooksPerPixel: number) {
   for (let i = 0; i < image.img.length; i += 3) {
     let publicationDate = image.img[i];
     const bookCount = image.img[i + 1];

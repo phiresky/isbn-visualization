@@ -76,11 +76,11 @@ export function loadRarityData(dbName: string, stats: StatsAggregator) {
   loadRarityData(dbName);
 }*/
 
-export default async function rarityModule(
+export default function rarityModule(
   stats: StatsAggregator,
-): Promise<ProcessSingleZoom> {
+): ProcessSingleZoom {
   const dataset = loadRarityData(
-    process.env.INPUT_HOLDING_SQLITE || "data/library_holding_data.sqlite3",
+    process.env.INPUT_HOLDING_SQLITE ?? "data/library_holding_data.sqlite3",
     stats,
   );
   return (tiler) => processRarityData(tiler, dataset);
@@ -112,7 +112,7 @@ async function processRarityData(
   }
 }
 
-async function postprocessPixels(image: ImageTile) {
+function postprocessPixels(image: ImageTile) {
   for (let i = 0; i < image.img.length; i += 3) {
     let holdingsCount = image.img[i];
     let editionCount = image.img[i + 1];

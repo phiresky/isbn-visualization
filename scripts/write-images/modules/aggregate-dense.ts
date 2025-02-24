@@ -34,7 +34,7 @@ export function aggregateDatasets(
 
     let position = 0;
     let isbnStreak = true;
-
+    if (!data) throw Error("no data");
     for (const value of data) {
       if (isbnStreak) {
         for (let j = 0; j < value; j++) {

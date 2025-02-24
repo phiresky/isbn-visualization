@@ -24,7 +24,7 @@ interface Record {
   };
 }
 
-async function connect(dbName: string) {
+function connect(dbName: string) {
   const db = sqlite(dbName);
   // enable wal mode
   db.prepare("PRAGMA journal_mode = WAL").run();
@@ -44,7 +44,7 @@ async function connect(dbName: string) {
 }
 
 async function load(dbName: string, dataDir: string) {
-  const db = await connect(dbName);
+  const db = connect(dbName);
   // readdir, find all dataDir/aarecords__*.json.gz
   const files = (await fs.readdir(dataDir)).filter((f) =>
     /^aarecords__[^.]+\.json\.gz$/.exec(f),
@@ -72,17 +72,15 @@ async function load(dbName: string, dataDir: string) {
       // insert into books
       const { title_best, author_best, publisher_best } =
         record._source.file_unified_data;
-      const {
-        aarecord_id,
-        isbn13 = [],
-        isbn10,
-      } = record._source.file_unified_data.identifiers_unified;
+      const { isbn13 = [], isbn10 } =
+        record._source.file_unified_data.identifiers_unified;
       if (!title_best) {
         // console.log(`No title for ${aarecord_id[0]}`);
         continue;
       }
-      const { book_id } = book.get(publisher_best, author_best, title_best)!;
-
+      const rop = book.get(publisher_best, author_best, title_best);
+      if (!rop) throw new Error("book.get failed");
+      const book_id = rop.book_id;
       if (isbn13.length === 0) {
         // console.log(`No ISBN for ${aarecord_id[0]} ${title_best}`);
         if (isbn10?.length) console.log(`no isbn13, but has isbn10: ${isbn10}`);
@@ -104,4 +102,4 @@ if (!dbName || !dataDir) {
   console.error("Usage: gen-sqlite <db-name> <data-dir>");
   process.exit(1);
 }
-load(dbName, dataDir);
+void load(dbName, dataDir);

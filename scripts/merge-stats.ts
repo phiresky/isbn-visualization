@@ -8,8 +8,11 @@ for (const dataset of ["all", "publication_date", "rarity", "publishers"]) {
     readFileSync(`public/images/tiled/${dataset}/stats.json`, "utf-8"),
   ) as StatsMap;
   for (const k of Object.keys(f) as IsbnPrefixWithoutDashes[]) {
-    if (out[k]) mergeStats(out[k], f[k]!);
-    else out[k] = f[k];
+    if (out[k]) {
+      const v = f[k];
+      if (v === undefined) continue;
+      mergeStats(out[k], v);
+    } else out[k] = f[k];
   }
 }
 

@@ -62,7 +62,6 @@ const ColorGradientSingleValue: React.FC<SingleValueProps<{ value: number }>> =
     const meaning =
       p.selectProps.store.currentDataset.colorSchemeMeaning ??
       defaultColorSchemeMeaning;
-    if (!meaning) return null;
     return (
       <components.SingleValue {...p}>
         {/* <div style={{ textAlign: "center" }}>Legend</div> */}

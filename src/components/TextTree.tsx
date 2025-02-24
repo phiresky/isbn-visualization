@@ -37,7 +37,7 @@ const GroupShowInner: React.FC<{
   const [groupO, setGroupO] = useState<LazyPrefixInfo | null>(null);
 
   useEffect(() => {
-    (async () => {
+    void (async () => {
       // resolve group plus one child level
       let g = getGroup(props.store.rootPrefixInfo, props.prefix);
       const jsonRoot = props.store.runtimeConfig.jsonRoot;
@@ -221,7 +221,7 @@ const GroupNameTxt = function GroupName(props: {
   group: LazyPrefixInfo;
 }) {
   const firstInfo = props.group.info?.[0];
-  const infoCount = props.group.info?.length || 0;
+  const infoCount = props.group.info?.length ?? 0;
   if (!firstInfo) {
     return (
       <small>

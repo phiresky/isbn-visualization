@@ -7,8 +7,10 @@ import { Store } from "./Store";
 declare module "react-select/base" {
   export interface Props<
     Option,
-    _IsMulti extends boolean,
-    _Group extends GroupBase<Option>,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    IsMulti extends boolean,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    Group extends GroupBase<Option>,
   > {
     store: Store;
   }

@@ -35,7 +35,7 @@ export const PublisherHighlightShow: React.FC<{ store: Store }> = observer(
                       groupInfo={store.highlightedPublisher.data}
                       obj={store.highlightedPublisher.obj}
                     />
-                  )) || <div>Unassigned or unknown range</div>}
+                  )) ?? <div>Unassigned or unknown range</div>}
                 <br />
                 {publisher && (
                   <AbbrevStats

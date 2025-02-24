@@ -49,7 +49,6 @@ export async function processPublishersData(
         continue;
       }
       color = null;
-      const groupId = data.outers[0].info?.[0].numericId;
       const publisherId = data.outers[1]?.info?.[0].numericId;
       // publisherId to RGB
       if (publisherId) {
@@ -80,7 +79,7 @@ export async function loadPublishersData() {
   const publishersData = {
     children: JSON.parse(
       await readFile(
-        process.env.INPUT_PREFIX_DATA || `data/prefix-data.json`,
+        process.env.INPUT_PREFIX_DATA ?? `data/prefix-data.json`,
         "utf8",
       ),
     ) as InfoMap,

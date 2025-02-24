@@ -50,7 +50,7 @@ export const Controls: React.FC<{ store: Store }> = observer(function Controls({
         {state.showSettings && (
           <>
             <button onClick={() => (state.showSettings = !state.showSettings)}>
-              <small>⚙ {state.showSettings ? "Done" : "Advanced"}</small>
+              <small>⚙ Done</small>
             </button>
 
             <button
@@ -197,7 +197,7 @@ const MainStuff: React.FC<{ store: Store }> = observer(function MainStuff({
                 {
                   id: `isbn-${e}`,
                   volumeInfo: {
-                    title: isbnlib.hyphenate(eAsNum) ?? eAsNum,
+                    title: isbnlib.hyphenate(eAsNum) || eAsNum,
                     authors: ["Go to ISBN"],
                     industryIdentifiers: [
                       {

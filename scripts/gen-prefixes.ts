@@ -69,7 +69,7 @@ async function go() {
   const publishersIdCache = new Map<string, number>();
   function countUniquePublishers(map: InfoMap): Set<string> {
     const out = new Set<string>();
-    for (const [digit, info] of Object.entries(map) as [Digit, PrefixInfo][]) {
+    for (const [_digit, info] of Object.entries(map) as [Digit, PrefixInfo][]) {
       if (info.children) {
         const children = countUniquePublishers(info.children);
         info.totalChildren = children.size;
@@ -79,7 +79,7 @@ async function go() {
       }
       if (info.info) {
         for (const record of info.info) {
-          if (record && record.source === "isbngrp") {
+          if (record.source === "isbngrp") {
             out.add(record.registrant_name);
           }
         }
@@ -89,23 +89,20 @@ async function go() {
   }
   countUniquePublishers(map);
   function recurseAssignNumericIds(map: InfoMap) {
-    for (const [digit, info] of Object.entries(map) as [Digit, PrefixInfo][]) {
+    for (const [_digit, info] of Object.entries(map) as [Digit, PrefixInfo][]) {
       if (info.info) {
         const record = info.info[0];
-        // for (const record of info.info) {
-        if (record) {
-          if (record.source === "isbngrp") {
-            const cached = publishersIdCache.get(record.registrant_name);
-            if (cached) {
-              record.numericId = cached;
-            } else {
-              record.numericId = nextPublisherId++;
-              publishersIdCache.set(record.registrant_name, record.numericId);
-            }
+        if (record.source === "isbngrp") {
+          const cached = publishersIdCache.get(record.registrant_name);
+          if (cached) {
+            record.numericId = cached;
           } else {
-            if (record.name !== "Unassigned") {
-              record.numericId = nextGroupId++;
-            }
+            record.numericId = nextPublisherId++;
+            publishersIdCache.set(record.registrant_name, record.numericId);
+          }
+        } else {
+          if (record.name !== "Unassigned") {
+            record.numericId = nextGroupId++;
           }
         }
       }
@@ -141,7 +138,7 @@ async function go() {
             info.totalChildren <= maxInlineDeepChildren
               ? info.children
               : await recurseOrRemoveAndWrite(
-                  info.children || {},
+                  info.children ?? {},
                   depth + 1,
                   `${prefix}${digit}`,
                 ),

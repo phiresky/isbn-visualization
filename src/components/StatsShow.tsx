@@ -94,7 +94,7 @@ export const StatsShow: React.FC<{ store: Store }> = observer(
                     <table className="stats-table">
                       <tbody>
                         <tr>
-                          <td>{(stats.dataset_all || 0).toLocaleString()}</td>
+                          <td>{(stats.dataset_all ?? 0).toLocaleString()}</td>
                           <td>
                             <b>books total</b>
                           </td>
@@ -166,14 +166,14 @@ function StatsSummary(props: {
       <b>Known books:</b> {r.dataset_all.toLocaleString()}
       <br />
       <b>dataset_md5:</b> {r.dataset_md5 ?? 0} (
-      {(((r.dataset_md5 ?? 0) / (r.dataset_all ?? 0)) * 100).toFixed(2)}
+      {(((r.dataset_md5 ?? 0) / r.dataset_all) * 100).toFixed(2)}
       %)
       <br />
       <b>Average publication year:</b>{" "}
       {r.publication_date_count && (
         <>
           {((r.publication_date ?? 0) / r.publication_date_count).toFixed(0)} (
-          {(r.publication_date_count ?? 0).toFixed(0)} samples)
+          {r.publication_date_count.toFixed(0)} samples)
           <br />
         </>
       )}

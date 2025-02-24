@@ -76,7 +76,7 @@ export default {
         title: "Rarity",
         markers: Array.from({ length: 21 }).map((_, i) => ({
           value: (i / 20.0) ** 2,
-          label: { 0: "0 libraries", 10: "10", 20: "20+" }[i] || "",
+          label: { 0: "0 libraries", 10: "10", 20: "20+" }[i] ?? "",
         })),
       },
       runtimeConfig: {

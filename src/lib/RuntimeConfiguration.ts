@@ -107,8 +107,8 @@ export function defaultRuntimeConfig(dataset: string): RuntimeConfiguration {
 export function loadRuntimeConfigFromURL(): RuntimeConfiguration {
   const url = new URLSearchParams(window.location.search);
   const base = defaultRuntimeConfig(
-    url.get("dataset") || defaultDataset,
-  ) as Record<string, unknown>;
+    url.get("dataset") ?? defaultDataset,
+  ) as unknown as Record<string, unknown>;
   for (const key in base) {
     const value = url.get(key);
     if (value !== null) {
@@ -117,39 +117,46 @@ export function loadRuntimeConfigFromURL(): RuntimeConfiguration {
       } else if (typeof base[key] === "boolean") {
         base[key] = value === "true";
       } else if (typeof base[key] === "string") {
-        base[key] = value as any;
+        base[key] = value;
       } else {
         throw new Error(`Unknown type for ${key}`);
       }
     }
   }
-  return base as RuntimeConfiguration;
+  return base as unknown as RuntimeConfiguration;
 }
 
 // set, to url, only values not same as base, taking care of nulls as well
 export function saveRuntimeConfigToURL(_config: RuntimeConfiguration) {
-  const config = _config as Record<string, unknown>;
-  const base = defaultRuntimeConfig(_config.dataset) as Record<string, unknown>;
+  const config = _config as unknown as Record<string, unknown>;
+  const base = defaultRuntimeConfig(_config.dataset) as unknown as Record<
+    string,
+    unknown
+  >;
   const url = new URLSearchParams();
   if (_config.dataset !== defaultDataset) {
     url.set("dataset", _config.dataset);
   }
   for (const key in config) {
     if (config[key] !== base[key]) {
-      url.set(key, config[key] + "");
+      url.set(key, String(config[key]));
     }
   }
 
   debounceSetUrl(url);
 }
 
-function debounce<T extends (...args: any[]) => any>(func: T, wait: number): T {
+function debounce<A>(
+  func: (...args: A[]) => void,
+  wait: number,
+): (...args: A[]) => void {
   let timeout: number;
-  return function (this: any, ...args: any[]) {
-    const context = this;
+  return function (this: unknown, ...args: A[]) {
     clearTimeout(timeout);
-    timeout = window.setTimeout(() => func.apply(context, args), wait);
-  } as any;
+    timeout = window.setTimeout(() => {
+      func.apply(this, args);
+    }, wait);
+  };
 }
 
 const debounceSetUrl = debounce((url: URLSearchParams) => {

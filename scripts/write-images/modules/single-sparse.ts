@@ -42,7 +42,7 @@ export async function loadSparseDataToMemory(): Promise<IsbnData> {
     fileStream
       .pipe(ZSTDDecompress())
       .on("data", (chunk: Buffer) => chunks.push(chunk))
-      .on("end", async () => {
+      .on("end", () => {
         const data = Buffer.concat(chunks);
         const isbnData = bencode.decode(data) as Record<string, Uint8Array>;
         // Convert Uint8Array to Uint32Array

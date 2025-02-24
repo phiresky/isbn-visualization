@@ -44,7 +44,7 @@ export class ImageTiler {
   postprocessPixels?: (
     img: ImageTile,
     totalBooksPerPixel: number,
-  ) => Promise<void>;
+  ) => void | Promise<void>;
   constructor(
     private prefixLength: number,
     private tiledDir: string,
@@ -104,6 +104,7 @@ export class ImageTiler {
     const image = this.#getImage(relativeIsbn);
     // const x = Math.floor((position / scale) % dimensions.width);
     // const y = Math.floor(position / scale / dimensions.width);
+    // eslint-disable-next-line prefer-const
     let { x, y, width, height } =
       this.config.relativeIsbnToCoords(relativeIsbn);
     x -= image.x;

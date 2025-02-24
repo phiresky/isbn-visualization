@@ -3,7 +3,7 @@ import { ImageTiler, StatsAggregator } from "./ImageTiler";
 import * as modules from "./modules";
 import { loadSparseDataToMemory } from "./modules/single-sparse";
 
-export type IsbnData = Record<string, Uint32Array>;
+export type IsbnData = Partial<Record<string, Uint32Array>>;
 
 /** sharp / vips uses a channel max of 1e16 for float32 images for some reason */
 export const channelMax = 65535;
@@ -58,11 +58,11 @@ async function loadData(
   if (dataset === "publishers") {
     return await modules.publishers();
   } else if (dataset === "rarity") {
-    return await modules.rarity(stats);
+    return modules.rarity(stats);
   } else if (dataset === "all") {
     return await modules.all(stats);
   } else if (dataset === "publication_date") {
-    return await modules.publication_date(stats);
+    return modules.publication_date(stats);
   } else {
     return await modules.single(dataset);
   }

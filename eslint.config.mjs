@@ -30,5 +30,5 @@ export default tseslint.config(
         { allowConstantLoopConditions: true },
       ],
     },
-  }
+  },
 );

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method -- mobx binds observable methods */
 import { computed } from "mobx";
 import { Observer, observer, useLocalObservable } from "mobx-react-lite";
 import React, { useRef } from "react";
@@ -260,7 +261,7 @@ const parsePosition = (pos: string) => {
 };
 // Color generation
 const generateColor = (pos: string): string => {
-  const { row, column, subdivision } = parsePosition(pos);
+  const { column, subdivision } = parsePosition(pos);
   const isXX = subdivision !== null;
 
   if (isXX) {
@@ -349,7 +350,7 @@ const RenderBlock: React.FC<{ block: BlockConfig; store: Store }> = observer(
       >
         <rect
           {...dims}
-          fill={block.color || generateColor(pos)}
+          fill={block.color ?? generateColor(pos)}
           opacity={isHovered ? 1 : 0.8}
           stroke={isHovered ? "#fff" : isXX ? "#444" : "none"}
           strokeWidth={isHovered ? "0.2" : "0.1"}
