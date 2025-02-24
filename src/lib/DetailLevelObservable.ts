@@ -18,7 +18,10 @@ export class DetailLevelObservable {
   isbnStart: IsbnRelative;
   isbnEnd: IsbnRelative;
   parent: DetailLevelObservable | null = null;
-  constructor(private store: Store, private prefix: IsbnPrefixWithoutDashes) {
+  constructor(
+    private store: Store,
+    private prefix: IsbnPrefixWithoutDashes,
+  ) {
     makeObservable(this, {
       viewVisible: computed,
       container: computed,
@@ -37,7 +40,7 @@ export class DetailLevelObservable {
     this.planePosition = getPlanePosition(
       store.projection,
       this.isbnStart,
-      this.isbnEnd
+      this.isbnEnd,
     );
     this.rect = this.planePosition;
   }
@@ -65,8 +68,8 @@ export class DetailLevelObservable {
           Math.min(
             1,
             (getScale(this.rect, this.store, 0) - textSwitchLevel) /
-              textSwitchLevelFull
-          )
+              textSwitchLevelFull,
+          ),
         );
     // show 2 levels at the same time
     const showLevels = this.store.runtimeConfig.textLevelCount;
@@ -78,8 +81,8 @@ export class DetailLevelObservable {
             1,
             1 -
               (getScale(this.rect, this.store, -showLevels) - textSwitchLevel) /
-                textSwitchLevelFull
-          )
+                textSwitchLevelFull,
+          ),
         );
     return Math.min(opa1, opa2);
   }
@@ -99,7 +102,7 @@ export class DetailLevelObservable {
     const nextLargerImgScale = getScale(
       this.rect,
       this.store,
-      relativeLevel + 1
+      relativeLevel + 1,
     );
     return (
       this.prefix.length <= 6 &&
@@ -122,7 +125,7 @@ export interface DetailLevel {
 export function getScale(
   rect: { xEnd: number; xStart: number; yEnd: number; yStart: number },
   store: Store,
-  relativeLevel: number
+  relativeLevel: number,
 ) {
   const imgWidthInPixels = (rect.xEnd - rect.xStart) * store.floatZoomFactor;
   const isVertical = rect.xEnd - rect.xStart < rect.yEnd - rect.yStart;

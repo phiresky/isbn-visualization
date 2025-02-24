@@ -5,7 +5,7 @@ import { loadSparseDataToMemory } from "./single-sparse";
 
 export async function colorImageWithDenseIsbns(
   tiler: ImageTiler,
-  isbnsBinaryUint8: Uint8Array
+  isbnsBinaryUint8: Uint8Array,
 ): Promise<void> {
   if (isbnsBinaryUint8.length !== totalIsbns) throw Error("wrong length");
   const addcolor = [1, 1, 1] as [number, number, number];
@@ -13,7 +13,7 @@ export async function colorImageWithDenseIsbns(
     const relativeIsbn = i as IsbnRelative;
     if (relativeIsbn % 2e6 === 0) {
       console.log(
-        `Processing ${((relativeIsbn / totalIsbns) * 100).toFixed(2)}%...`
+        `Processing ${((relativeIsbn / totalIsbns) * 100).toFixed(2)}%...`,
       );
       await tiler.purgeToLength(1);
     }
@@ -25,7 +25,7 @@ export async function colorImageWithDenseIsbns(
 }
 export function aggregateDatasets(
   datasets: IsbnData,
-  stats: StatsAggregator
+  stats: StatsAggregator,
 ): Uint8Array {
   const out = new Uint8Array(totalIsbns);
   for (const dataset in datasets) {
@@ -55,7 +55,7 @@ export function aggregateDatasets(
 }
 
 export default async function aggregateDense(
-  stats: StatsAggregator
+  stats: StatsAggregator,
 ): Promise<ProcessSingleZoom> {
   const dataSet = await loadSparseDataToMemory();
   const data = aggregateDatasets(dataSet, stats);

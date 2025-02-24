@@ -55,7 +55,7 @@ export const PublisherHighlightShow: React.FC<{ store: Store }> = observer(
         </group>
       </>
     );
-  }
+  },
 );
 export const HighlightShow: React.FC<{ store: Store }> = observer(
   function HighlightShow({ store }) {
@@ -82,7 +82,7 @@ export const HighlightShow: React.FC<{ store: Store }> = observer(
         </group>
       </>
     );
-  }
+  },
 );
 
 const HighlightCircle: React.FC<{ store: Store }> = observer(
@@ -120,7 +120,7 @@ const HighlightCircle: React.FC<{ store: Store }> = observer(
         {/*svg({ zIndex: 30 })*/}
       </div>
     );
-  }
+  },
 );
 const IsbnInfo = observer(function IsbnInfo(props: { store: Store }) {
   const o = props.store.highlightedIsbn;
@@ -173,7 +173,7 @@ const IsbnInfo = observer(function IsbnInfo(props: { store: Store }) {
                   </>
                 )}
               </li>
-            ))
+            )),
           )}
         </details>
         Look up book on

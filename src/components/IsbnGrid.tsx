@@ -96,7 +96,7 @@ const IsbnGridLevel: React.FC<{
         return position;
       },
     }),
-    { position: computed.struct }
+    { position: computed.struct },
   );
   return (
     <Grid

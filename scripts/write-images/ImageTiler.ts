@@ -43,9 +43,12 @@ export class ImageTiler {
   stats?: StatsAggregator;
   postprocessPixels?: (
     img: ImageTile,
-    totalBooksPerPixel: number
+    totalBooksPerPixel: number,
   ) => Promise<void>;
-  constructor(private prefixLength: number, private tiledDir: string) {
+  constructor(
+    private prefixLength: number,
+    private tiledDir: string,
+  ) {
     const { width, height } =
       prefixLength === 4
         ? { width: 100000, height: 20000 }
@@ -95,7 +98,7 @@ export class ImageTiler {
       addToPixel: boolean;
       scaleColors: boolean;
       scaleColorByTileScale: boolean;
-    } = { addToPixel: true, scaleColorByTileScale: true, scaleColors: true }
+    } = { addToPixel: true, scaleColorByTileScale: true, scaleColors: true },
   ) {
     const channels = 3;
     const image = this.#getImage(relativeIsbn);

@@ -24,7 +24,7 @@ export const StatsShow: React.FC<{ store: Store }> = observer(
           transparent: true,
           opacity: 0.9,
         }),
-      []
+      [],
     );
     const state = useLocalObservable(() => ({
       get edge() {
@@ -46,7 +46,7 @@ export const StatsShow: React.FC<{ store: Store }> = observer(
       get stats() {
         if (!this.edge) return null;
         return fromPromise(
-          store.statsCalculator.getStats(this.edge[0], this.edge[1])
+          store.statsCalculator.getStats(this.edge[0], this.edge[1]),
         );
       },
     }));
@@ -124,7 +124,7 @@ export const StatsShow: React.FC<{ store: Store }> = observer(
         </Html>
       </group>
     );
-  }
+  },
 );
 export const AbbrevStats: React.FC<{
   store: Store;
@@ -134,7 +134,7 @@ export const AbbrevStats: React.FC<{
   const [p1, p2] = [removeDashes(prefixStart), removeDashes(prefixEnd)];
   const stats = useMemo(
     () => fromPromise(store.statsCalculator.getStats(p1, p2)),
-    [p1, p2]
+    [p1, p2],
   );
   return (
     <div>

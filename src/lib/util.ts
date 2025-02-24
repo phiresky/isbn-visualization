@@ -22,24 +22,24 @@ export type IsbnStrWithChecksum = Nominal<string, "IsbnStrWithChecksum">;
 /** prefix minus start isbn (e.g. prefix 9781 is prefix 01, 9792 is prefix 12) */
 export type IsbnPrefixRelative = Nominal<string, "IsbnPrefixRelative">;
 export function removeDashes(
-  prefix: IsbnPrefixWithDashes
+  prefix: IsbnPrefixWithDashes,
 ): IsbnPrefixWithoutDashes {
   return prefix.replace(/-/g, "") as IsbnPrefixWithoutDashes;
 }
 
 export function isbnPrefixAppend(
   prefix: IsbnPrefixWithDashes,
-  suffix: string
+  suffix: string,
 ): IsbnPrefixWithDashes {
   return (prefix + suffix) as IsbnPrefixWithDashes;
 }
 export function isbnPrefixToRelative(
-  prefix: IsbnPrefixWithoutDashes
+  prefix: IsbnPrefixWithoutDashes,
 ): IsbnPrefixRelative {
   return prefix.replace(/^978/, "0").replace(/^979/, "1") as IsbnPrefixRelative;
 }
 export function isbnPrefixFromRelative(
-  prefix: IsbnPrefixRelative
+  prefix: IsbnPrefixRelative,
 ): IsbnPrefixWithoutDashes {
   return prefix
     .replace(/^0/, "978")
@@ -49,12 +49,12 @@ export function isbnToRelative(isbn: Isbn13Number): IsbnRelative {
   return (isbn - isbnEANStart) as IsbnRelative;
 }
 export function relativeToIsbnPrefix(
-  relative: IsbnRelative
+  relative: IsbnRelative,
 ): IsbnPrefixWithoutDashes {
   return String(relative + isbnEANStart) as IsbnPrefixWithoutDashes;
 }
 export function relativeToFullIsbn(
-  relative: IsbnRelative
+  relative: IsbnRelative,
 ): IsbnStrWithChecksum {
   const noCs = String(relative + isbnEANStart);
   return (noCs + calculateCheckDigit(noCs)) as IsbnStrWithChecksum;
@@ -74,22 +74,22 @@ export interface ProjectionConfig {
   coordsToRelativeIsbn: (
     this: ProjectionConfig,
     x: number,
-    y: number
+    y: number,
   ) => IsbnRelative;
   relativeIsbnToCoords: (
     this: ProjectionConfig,
-    isbnRelative: IsbnRelative
+    isbnRelative: IsbnRelative,
   ) => { x: number; y: number; width: number; height: number };
 }
 
 export function firstIsbnInPrefix(
-  prefix: IsbnPrefixWithoutDashes
+  prefix: IsbnPrefixWithoutDashes,
 ): IsbnRelative {
   return isbnToRelative(+prefix.padEnd(12, "0") as Isbn13Number);
 }
 
 export function lastIsbnInPrefix(
-  prefix: IsbnPrefixWithoutDashes
+  prefix: IsbnPrefixWithoutDashes,
 ): IsbnRelative {
   return isbnToRelative(+prefix.padEnd(12, "9") as Isbn13Number);
 }
@@ -106,7 +106,7 @@ export const IMG_WIDTH = 2000;
 export function hsl2rgb(
   h: number,
   s: number,
-  l: number
+  l: number,
 ): [number, number, number] {
   const a = s * Math.min(l, 1 - l);
   const f = (n: number, k = (n + h / 30) % 12) =>

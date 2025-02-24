@@ -51,7 +51,7 @@ export const IsbnMap: React.FC<{ config: ProjectionConfig }> = observer(
           transparent: true,
           opacity: 0,
         }),
-      []
+      [],
     );
     return (
       <>
@@ -195,5 +195,5 @@ export const IsbnMap: React.FC<{ config: ProjectionConfig }> = observer(
         <MiniMap store={store} />
       </>
     );
-  }
+  },
 );

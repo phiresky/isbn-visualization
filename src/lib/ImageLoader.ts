@@ -18,21 +18,25 @@ export class ImageLoader {
   static maxZoomPrefixLength = 4; // images with nearest zoom have prefix length 4
   minFilter: MinificationTextureFilter = LinearMipMapLinearFilter;
   magFilter: MagnificationTextureFilter = LinearFilter;
-  constructor(root: string, private dataset: string, private store: Store) {
+  constructor(
+    root: string,
+    private dataset: string,
+    private store: Store,
+  ) {
     this.path = `${root}/${dataset}`;
     this.minFilter = dataset === "publishers" ? NearestFilter : NearestFilter;
 
     this.magFilter = dataset === "publishers" ? NearestFilter : NearestFilter;
     this.existing = store.trackAsyncProgress(
       `${this.path}/written.json`,
-      this.loadExisting()
+      this.loadExisting(),
     );
     this.hasChildren = this.loadHasChildren();
   }
   private async loadExisting() {
     try {
       const res = await fetch(`${this.path}/written.json`);
-      const json: IsbnPrefixRelative[] = await res.json();
+      const json = (await res.json()) as IsbnPrefixRelative[];
       return new Set(json);
     } catch (cause) {
       throw Error(`Could not load written.json for ${this.dataset}`, { cause });
@@ -53,25 +57,25 @@ export class ImageLoader {
     return hasChildren.has(prefix);
   }
   async getTexture(prefix: IsbnPrefixRelative): Promise<Texture | null> {
-    const loader = this;
-    if (loader.textures.has(prefix)) {
-      return loader.textures.get(prefix)!;
+    const gotten = this.textures.get(prefix);
+    if (gotten) {
+      return gotten;
     }
-    if (!(await loader.existing).has(prefix)) {
+    if (!(await this.existing).has(prefix)) {
       return null;
     }
     try {
-      const path = `${loader.path}/zoom-${prefix.length}/${prefix}.png`;
+      const path = `${this.path}/zoom-${prefix.length}/${prefix}.png`;
       const t = await this.store.trackAsyncProgress(
         `loadTexture(${path})`,
-        loader.loader.loadAsync(path)
+        this.loader.loadAsync(path),
       );
       if (prefix.length === ImageLoader.maxZoomPrefixLength)
         t.magFilter = NearestFilter;
       else t.magFilter = this.magFilter;
       // t.colorSpace = THREE.SRGBColorSpace;
       t.minFilter = this.minFilter;
-      loader.textures.set(prefix, t);
+      this.textures.set(prefix, t);
       return t;
     } catch (e) {
       console.error(e);

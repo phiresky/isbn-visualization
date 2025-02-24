@@ -44,7 +44,7 @@ const GroupShowInner: React.FC<{
       if (typeof g === "function")
         g = await props.store.trackAsyncProgress(
           `resolvePublishers(${props.prefix})`,
-          g(jsonRoot)
+          g(jsonRoot),
         );
       if (g?.children && "lazy" in g.children) {
         await resolveOnePrefixLevel(g, jsonRoot);
@@ -74,7 +74,7 @@ const GroupShowInner: React.FC<{
                 (groupO?.info?.[0].prefix
                   ? groupO.info[0].prefix + "-"
                   : props.prefix) as IsbnPrefixWithDashes,
-                String(i)
+                String(i),
               )}
               config={props.config}
               store={props.store}

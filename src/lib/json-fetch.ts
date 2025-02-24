@@ -2,7 +2,8 @@ export async function fetchJson<T>(fname: string) {
   const config = (await import("../config")).default;
   const gzip = config.jsonCompression === "gzip";
   const res = await fetch(`${fname}${gzip ? ".gz" : ""}`);
-  if (!res.ok) throw Error(res.status + " " + res.statusText, { cause: res });
+  if (!res.ok)
+    throw Error(String(res.status) + " " + res.statusText, { cause: res });
   let stream = res.body;
   if (!stream) throw Error("No body");
   if (
@@ -12,6 +13,6 @@ export async function fetchJson<T>(fname: string) {
     (import.meta.env.MODE !== "development" || fname.startsWith("https://"))
   )
     stream = stream.pipeThrough(new DecompressionStream("gzip"));
-  const map = await new Response(stream).json();
-  return map as T;
+  const map = (await new Response(stream).json()) as T;
+  return map;
 }

@@ -78,14 +78,14 @@ export interface GoogleBooksItem {
 
 export async function googleBooksQuery(query: string) {
   const r = await fetch(
-    `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`
+    `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`,
   );
   const r_1 = (await r.json()) as GoogleBooksResponse;
   return r_1.items ?? [];
 }
 
 export async function googleBooksQueryIsbn(
-  isbn: IsbnStrWithChecksum
+  isbn: IsbnStrWithChecksum,
 ): Promise<GoogleBooksItem | null> {
   const r = await googleBooksQuery(`isbn:${isbn}`);
   if (r.length === 0) return null;

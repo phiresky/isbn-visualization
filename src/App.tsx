@@ -10,10 +10,10 @@ const App: FC = () => {
         width: Math.min(
           1500,
           document.body.clientWidth,
-          (document.body.clientHeight / 2) * Math.sqrt(10)
+          (document.body.clientHeight / 2) * Math.sqrt(10),
         ),
       }),
-    []
+    [],
   );
   return <IsbnMap config={config} />;
 };

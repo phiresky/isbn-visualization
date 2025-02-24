@@ -39,7 +39,7 @@ export const SingleBookCover = observer(function SingleBookCover({
 }) {
   const fetchTitleJson = useMemo(
     () => fromPromise(store.titleFetcher.fetchTitle(isbn)),
-    [isbn]
+    [isbn],
   );
   const titleInfo = store.cachedGoogleBooks.get(isbn);
   const [y1, x1, y2, x2, y3, x3, _checksum] = isbn.slice(-7);

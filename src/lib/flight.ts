@@ -1,7 +1,10 @@
 import { Vector3Like } from "three/src/math/Vector3";
 
 class Point2D {
-  constructor(public x: number, public y: number) {}
+  constructor(
+    public x: number,
+    public y: number,
+  ) {}
   plus(p: Point2D) {
     return new Point2D(this.x + p.x, this.y + p.y);
   }
@@ -23,7 +26,11 @@ class Point2D {
 }
 
 export class Point3D implements Vector3Like {
-  constructor(public x: number, public y: number, public z: number) {}
+  constructor(
+    public x: number,
+    public y: number,
+    public z: number,
+  ) {}
 
   plus(p: Point3D) {
     return new Point3D(this.x + p.x, this.y + p.y, this.z + p.z);
@@ -45,7 +52,7 @@ export class Point3D implements Vector3Like {
   }
   distance(p: Point3D) {
     return Math.sqrt(
-      (this.x - p.x) ** 2 + (this.y - p.y) ** 2 + (this.z - p.z) ** 2
+      (this.x - p.x) ** 2 + (this.y - p.y) ** 2 + (this.z - p.z) ** 2,
     );
   }
   normalize() {
@@ -57,6 +64,7 @@ export class Point3D implements Vector3Like {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-wrapper-object-types
 export interface Trajectory extends Object {
   position(t: number): Point3D;
   duration: number;
@@ -64,13 +72,10 @@ export interface Trajectory extends Object {
 
 export function getTrajectoryReal2(
   before: Point3D,
-  after: Point3D
+  after: Point3D,
 ): Trajectory {
   // add flight duration to each point based on the distance to prev point
-  const traj: (Point3D & { t: number })[] = getTrajectoryReal(
-    before,
-    after
-  ) as any;
+  const traj = getTrajectoryReal(before, after) as (Point3D & { t: number })[];
   /*let totalDistance = 0;
   for (let i = 1; i < traj.length; i++) {
     totalDistance += Math.sqrt(
@@ -88,13 +93,13 @@ export function getTrajectoryReal2(
         : Math.sqrt(
             (traj[i].x - traj[i - 1].x) ** 2 +
               (traj[i].y - traj[i - 1].y) ** 2 +
-              (traj[i].z - traj[i - 1].z) ** 2
+              (traj[i].z - traj[i - 1].z) ** 2,
           );
     const t =
       distance *
       Math.min(
         3000,
-        i === 0 ? 1 / traj[i].z : (1 / traj[i].z + 1 / traj[i - 1].z) / 2
+        i === 0 ? 1 / traj[i].z : (1 / traj[i].z + 1 / traj[i - 1].z) / 2,
       );
     totalT += t;
     traj[i].t = t;
@@ -131,7 +136,7 @@ export function getTrajectoryReal2(
       return new Point3D(
         lastSegment.x + (segment.x - lastSegment.x) * progress,
         lastSegment.y + (segment.y - lastSegment.y) * progress,
-        lastSegment.z + (segment.z - lastSegment.z) * progress
+        lastSegment.z + (segment.z - lastSegment.z) * progress,
       );
     },
     duration: totalT,
@@ -167,7 +172,7 @@ function getTrajectoryPoints(
   x1: number,
   y1: number,
   x2: number,
-  y2: number
+  y2: number,
 ) {
   const { a, b, c } = calculateTrajectory(x1, y1, x2, y2);
   const points = [];
@@ -230,7 +235,7 @@ class TimeInterpolatingTrajectory implements Trajectory {
       fromP: Point3D,
       to: number,
       toP: Point3D,
-      depth: number
+      depth: number,
     ) {
       const distance = dist(fromP, toP);
 
@@ -271,7 +276,7 @@ class TimeInterpolatingTrajectory implements Trajectory {
     //console.log("dist-and-dist", { totalDistance, targetDuration });
     this.duration = Math.max(
       minDuration,
-      Math.min(targetDuration, maxDuration)
+      Math.min(targetDuration, maxDuration),
     );
 
     // create durations
@@ -326,7 +331,7 @@ class DirectBlubSpaceTrajectory implements Trajectory {
     public origin: Point3D,
     public target: Point3D,
     public xyDirection: Point3D,
-    public duration: number
+    public duration: number,
   ) {}
 
   position(t: number): Point3D {
@@ -335,7 +340,7 @@ class DirectBlubSpaceTrajectory implements Trajectory {
     }
     const progress = t / this.duration;
     const pointInBlub = this.start.plus(
-      this.end.minus(this.start).mul(progress)
+      this.end.minus(this.start).mul(progress),
     );
 
     const { dist, zoom } = fromBlubSpace(pointInBlub, segmentSize);
@@ -345,6 +350,7 @@ class DirectBlubSpaceTrajectory implements Trajectory {
   }
 
   reverse(): Trajectory & { origin: Point3D } {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
     return {
       duration: self.duration,
@@ -365,7 +371,7 @@ class RealSpaceTrajectory implements Trajectory {
   constructor(
     private origin: Point3D,
     private target: Point3D,
-    public duration: number
+    public duration: number,
   ) {
     this.direct = target.minus(origin);
   }
@@ -410,7 +416,7 @@ class CompositeTrajectory implements Trajectory {
       rest -= trajectory.duration;
     }
     return this.trajectories[this.trajectories.length - 1].position(
-      this.trajectories[this.trajectories.length - 1].duration
+      this.trajectories[this.trajectories.length - 1].duration,
     );
   }
 }
@@ -421,23 +427,23 @@ const targetMinZoom = 1;
 
 export function plotSmartTrajectory(
   origin: Point3D,
-  target: Point3D
+  target: Point3D,
 ): Trajectory {
   return new TimeInterpolatingTrajectory(
-    plotSmartTrajectoryInner(origin, target)
+    plotSmartTrajectoryInner(origin, target),
   );
 }
 
 function plotSmartTrajectoryInner(
   origin: Point3D,
-  target: Point3D
+  target: Point3D,
 ): Trajectory {
   const direct = target.minus(origin);
   const xyDistance = Math.sqrt(direct.x ** 2 + direct.y ** 2);
   const xyDirection = new Point3D(
     direct.x / xyDistance,
     direct.y / xyDistance,
-    0
+    0,
   );
 
   // console.log("plotSmartTrajectory", {
@@ -458,18 +464,18 @@ function plotSmartTrajectoryInner(
       origin,
       xyDirection,
       1 / 3,
-      targetMinZoom
+      targetMinZoom,
     );
     const zoomInTrajectory = makeFullZoomOutTrajectory(
       target,
       xyDirection.neg(),
       1 / 3,
-      targetMinZoom
+      targetMinZoom,
     ).reverse();
     const topLevelZoomTrajectory = new RealSpaceTrajectory(
       zoomOutTrajectory.target,
       zoomInTrajectory.origin,
-      1 / 10
+      1 / 10,
     );
     //console.log("makeIndirectTrajectory", { zoomOutTrajectory, topLevelZoomTrajectory, zoomInTrajectory });
     return new CompositeTrajectory([
@@ -493,7 +499,7 @@ function plotSmartTrajectoryInner(
           start,
           end,
           new Point2D(0, 0),
-          zoomToBlubRadius(targetMinZoom)
+          zoomToBlubRadius(targetMinZoom),
         )
       ) {
         // if the line intersects the targetMinZoom circle, we need to zoom out to targetMinZoom and then do a full zoom in
@@ -508,7 +514,7 @@ function plotSmartTrajectoryInner(
       origin,
       target,
       xyDirection,
-      1
+      1,
     );
   } else if (origin.z > targetMinZoom) {
     // if we are zoomed out more than the targetMinZoom,
@@ -517,12 +523,12 @@ function plotSmartTrajectoryInner(
       target,
       xyDirection.neg(),
       1 / 2,
-      origin.z
+      origin.z,
     ).reverse();
     const topLevelZoomTrajectory = new RealSpaceTrajectory(
       origin,
       zoomInTrajectory.origin,
-      1 / 2
+      1 / 2,
     );
     //console.log("onlyZoomIn", { topLevelZoomTrajectory, zoomInTrajectory });
     return new CompositeTrajectory([topLevelZoomTrajectory, zoomInTrajectory]);
@@ -538,7 +544,7 @@ function lineIntersectsCircle(
   p1: Point2D,
   p2: Point2D,
   circle: Point2D,
-  radius: number
+  radius: number,
 ) {
   // no idea whats going on here... it's adapted from the INTERNET!
   const v1 = {
@@ -552,11 +558,11 @@ function lineIntersectsCircle(
   const b = -2 * (v1.x * v2.x + v1.y * v2.y);
   const c = 2 * (v1.x * v1.x + v1.y * v1.y);
   const d = Math.sqrt(
-    b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - radius * radius)
+    b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - radius * radius),
   );
   if (isNaN(d)) {
     // no intercept
-    false;
+    return false;
   }
   const u1 = (b - d) / c; // these represent the unit distance of point one and two on the line
   const u2 = (b + d) / c;
@@ -571,16 +577,16 @@ function makeFullZoomOutTrajectory(
   origin: Point3D,
   xyDirection: Point3D,
   duration: number,
-  targetZoom: number
+  targetZoom: number,
 ): DirectBlubSpaceTrajectory {
   const zoomOutStart = toBlubSpace(0, origin.z, segmentSize);
   const zoomOutEnd = circleTangentPointFrom0Origin(
     zoomOutStart,
-    zoomToBlubRadius(targetZoom)
+    zoomToBlubRadius(targetZoom),
   );
   const { dist: zoomOutEndDist, zoom: zoomOutEndZoom } = fromBlubSpace(
     zoomOutEnd,
-    segmentSize
+    segmentSize,
   );
   const zoomOutEndInReal = origin.plus(xyDirection.mul(zoomOutEndDist));
   zoomOutEndInReal.z = zoomOutEndZoom;
@@ -593,7 +599,7 @@ function makeFullZoomOutTrajectory(
     origin,
     zoomOutEndInReal,
     xyDirection,
-    duration
+    duration,
   );
 }
 
@@ -605,7 +611,7 @@ function circleTangentPointFrom0Origin(p: Point2D, radius: number): Point2D {
   const zoomOutAngle = Math.acos(radius / startRadius);
   return new Point2D(
     Math.cos(zoomOutAngle) * radius,
-    Math.sin(zoomOutAngle) * radius
+    Math.sin(zoomOutAngle) * radius,
   );
 }
 
@@ -626,7 +632,7 @@ function toBlubSpace(dist: number, zoom: number, segmentSize: number): Point2D {
 
 function fromBlubSpace(
   p: Point2D,
-  segmentSize: number
+  segmentSize: number,
 ): { dist: number; zoom: number } {
   const radius = Math.sqrt(p.x ** 2 + p.y ** 2);
   const angle = Math.atan2(p.y, p.x);

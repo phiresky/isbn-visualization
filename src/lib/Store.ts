@@ -126,7 +126,8 @@ export class Store {
     }
   }
   getDetailLevel = createTransformer(
-    (prefix: IsbnPrefixWithoutDashes) => new DetailLevelObservable(this, prefix)
+    (prefix: IsbnPrefixWithoutDashes) =>
+      new DetailLevelObservable(this, prefix),
   );
   imageLoader(dataset: string) {
     let l = this.#imageLoader.get(dataset);
@@ -150,7 +151,7 @@ export class Store {
     if (cached) return Promise.resolve(cached);
     const result = await this.trackAsyncProgress(
       `googleBooksQuery(${isbn})`,
-      googleBooksQueryIsbn(isbn)
+      googleBooksQueryIsbn(isbn),
     );
     this.cachedGoogleBooks.set(isbn, result);
     return result;
@@ -163,7 +164,7 @@ export class Store {
     } else {
       this.updateHighlightedIsbn(
         relativeToFullIsbn(relativeIsbn),
-        relativeIsbn
+        relativeIsbn,
       );
     }
   }
@@ -182,7 +183,7 @@ export class Store {
         getGroupHierarchy(
           this.rootPrefixInfo,
           isbnStr,
-          false
+          false,
         ) as LazyPrefixInfoWithParents
       ).outers;
 
@@ -192,7 +193,7 @@ export class Store {
           groupInfo(this.runtimeConfig.jsonRoot).then((info) => {
             if (this.highlightedPublisher)
               this.highlightedPublisher.data = info.outers;
-          })
+          }),
         );
     } else {
       this.highlightedPublisher.data = groupInfo.outers;
@@ -203,7 +204,7 @@ export class Store {
     const relativeIsbn = this.projection.coordsToRelativeIsbn(x, y);
     const prefix = relativeToIsbnPrefix(relativeIsbn).slice(
       0,
-      statsConfig.maxPrefixLength
+      statsConfig.maxPrefixLength,
     ) as IsbnPrefixWithoutDashes;
     if (!this.highlightedStats || mode === "start")
       this.highlightedStats = { prefixStart: prefix, prefixEnd: prefix };
@@ -213,15 +214,15 @@ export class Store {
   trackAsyncProgress<T>(_id: string, p: Promise<T>) {
     let id = _id;
     let copy = 1;
-    while (this.inProgress.has(id)) id = _id + " " + ++copy;
+    while (this.inProgress.has(id)) id = _id + " " + String(++copy);
     runInAction(() => this.inProgress.set(id, null));
     //console.time(id);
-    p.then(() => {
+    void p.then(() => {
       this.inProgress.delete(id);
       //console.timeEnd(id);
     });
-    p.catch((e) => {
-      this.inProgress.set(id, e);
+    p.catch((e: unknown) => {
+      this.inProgress.set(id, String(e));
       console.timeEnd(id);
       console.warn(id, "ERROR", e);
     });
@@ -229,7 +230,7 @@ export class Store {
   }
   updateHighlightedIsbn(
     fullIsbn: IsbnStrWithChecksum,
-    relativeIsbn?: IsbnRelative
+    relativeIsbn?: IsbnRelative,
   ) {
     if (!relativeIsbn) relativeIsbn = fullIsbnToRelative(fullIsbn);
     const isbnStr = relativeToIsbnPrefix(relativeIsbn);
@@ -256,7 +257,7 @@ export class Store {
         getGroupHierarchy(
           this.rootPrefixInfo,
           isbnStr,
-          false
+          false,
         ) as LazyPrefixInfoWithParents
       ).outers;
       //groupInfo().then((info) => (this.highlightedGroupInfo = info.outers));
@@ -264,13 +265,13 @@ export class Store {
         groupInfo(this.runtimeConfig.jsonRoot).then((info) => {
           if (this.highlightedIsbn.type === "done")
             this.highlightedIsbn.groupInfo = info.outers;
-        })
+        }),
       );
     } else {
       this.highlightedIsbn.groupInfo = groupInfo.outers;
     }
     if (this.highlightedIsbn.groupInfo.length > 0) {
-      (async () => {
+      void (async () => {
         const detail = await this.getBookDetail(fullIsbn);
         if (
           this.highlightedIsbn.type === "done" &&
@@ -278,7 +279,7 @@ export class Store {
         )
           this.highlightedIsbn.googleBookDetails = detail;
       })();
-      (async () => {
+      void (async () => {
         const rarity = await this.getRarityOfIsbn(relativeIsbn);
         if (
           this.highlightedIsbn.type === "done" &&
@@ -297,12 +298,12 @@ export class Store {
       clearTimeout(this.debounceFetchGroupDataTimeout);
     }
     this.debounceFetchGroupDataTimeout = setTimeout(() => {
-      this.trackAsyncProgress("highlightGroupInfo", newFunction());
+      void this.trackAsyncProgress("highlightGroupInfo", newFunction());
     }, 500);
   }
   updateView(e?: OrbitControlsChangeEvent) {
     if (!e) return;
-    const camera = (e as any).target.object as Camera;
+    const camera = (e as { target: { object: Camera } }).target.object;
     const topLeft = new Vector3(-1, -1, 0).unproject(camera);
     const bottomRight = new Vector3(1, 1, 0).unproject(camera);
     const minX = topLeft.x + this.projection.pixelWidth / 2;
@@ -323,7 +324,7 @@ export class Store {
   zoomAnimateToHighlight() {
     if (this.highlightedIsbn.type !== "done") return;
     const { x, y, width, height } = this.projection.relativeIsbnToCoords(
-      this.highlightedIsbn.relative
+      this.highlightedIsbn.relative,
     );
     const targetX = x + width / 2;
     const targetY = y + (height * 3) / 4;
@@ -332,7 +333,8 @@ export class Store {
   setView(targetX: number, targetY: number) {
     targetX -= this.projection.pixelWidth / 2;
     targetY = this.projection.pixelHeight / 2 - targetY;
-    const camera = this.camera!;
+    const camera = this.camera;
+    if (!camera) return;
     camera.position.x = targetX;
     camera.position.y = targetY;
     // if (position.zoom) camera.zoom = position.zoom;
@@ -345,7 +347,7 @@ export class Store {
     targetX: number,
     targetY: number,
     targetZoom: number,
-    timeScale: number
+    timeScale: number,
   ) {
     targetX -= this.projection.pixelWidth / 2;
     targetY = this.projection.pixelHeight / 2 - targetY;
@@ -353,10 +355,12 @@ export class Store {
     if (!camera) return;
     const orbitControls = this.orbitControls;
     if (!orbitControls) return;
-    const orig = { ...camera.position };
-    const origZoom = camera.zoom;
     const maxZoom = 1; // maxZoom = distance 1. 1/2 * maxZoom = distance 2 => maxZoom/n = distance n;
-    const from = new Point3D(orig.x, orig.y, maxZoom / camera.zoom);
+    const from = new Point3D(
+      camera.position.x,
+      camera.position.y,
+      maxZoom / camera.zoom,
+    );
     const to = new Point3D(targetX, targetY, maxZoom / targetZoom);
     console.log("xyz space", {
       from,
@@ -390,31 +394,32 @@ export class Store {
   async getRarityOfIsbn(isbn: IsbnRelative): Promise<RarityInfo | null> {
     const imgPrefix = relativeToIsbnPrefix(isbn).slice(
       0,
-      2 + 4
+      2 + 4,
     ) as IsbnPrefixWithoutDashes;
 
     const img = await this.imageLoader("rarity").getTexture(
-      isbnPrefixToRelative(imgPrefix)
+      isbnPrefixToRelative(imgPrefix),
     );
     if (!img) return null;
-    const imgElement = img.image as HTMLImageElement;
+    const imgElement = img.image as HTMLImageElement | null;
     if (!imgElement) throw Error("no image element");
     const imgPos = this.projection.relativeIsbnToCoords(
-      firstIsbnInPrefix(imgPrefix)
+      firstIsbnInPrefix(imgPrefix),
     );
     const imgPosEnd = this.projection.relativeIsbnToCoords(
-      lastIsbnInPrefix(imgPrefix)
+      lastIsbnInPrefix(imgPrefix),
     );
     const pos = this.projection.relativeIsbnToCoords(isbn);
     const canvas = new OffscreenCanvas(1, 1);
-    const ctx = canvas.getContext("2d")!;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw Error("no canvas context");
     const xInImg = Math.round(
       ((pos.x - imgPos.x) / (imgPosEnd.x + imgPosEnd.width - imgPos.x)) *
-        imgElement.width
+        imgElement.width,
     );
     const yInImg = Math.round(
       ((pos.y - imgPos.y) / (imgPosEnd.y + imgPosEnd.height - imgPos.y)) *
-        imgElement.height
+        imgElement.height,
     );
     ctx.drawImage(imgElement, xInImg, yInImg, 1, 1, 0, 0, 1, 1);
     const imgData = ctx.getImageData(0, 0, 1, 1);
@@ -427,7 +432,7 @@ export class Store {
   }
   get currentDataset() {
     const d = config.datasetOptions.find(
-      (g) => g.id === this.runtimeConfig.dataset
+      (g) => g.id === this.runtimeConfig.dataset,
     );
     if (!d) throw Error("dataset not found");
     return d;

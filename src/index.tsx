@@ -9,7 +9,7 @@ configure({ enforceActions: "never", computedRequiresReaction: true });
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <App />
-  </StrictMode>
+  </StrictMode>,
 );
 
 function testCompat() {

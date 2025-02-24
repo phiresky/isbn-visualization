@@ -50,9 +50,10 @@ export type LazyInfoMap = NeedLazyLoad | Partial<Record<Digit, LazyPrefixInfo>>;
 export function addRecord(
   map: InfoMap,
   prefix: IsbnPrefixWithDashes,
-  record: PrefixInfoData
+  record: PrefixInfoData,
 ) {
   let layer = map;
+  // eslint-disable-next-line @typescript-eslint/no-misused-spread
   for (const [i, _digit] of [...prefix].entries()) {
     if (_digit === "-") continue;
     const digit = _digit as Digit;

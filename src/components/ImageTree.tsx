@@ -46,10 +46,10 @@ const GroupShowInner: React.FC<{
               (dataset) =>
                 props.store
                   .imageLoader(dataset)
-                  .getHasChildren(isbnPrefixToRelative(groupPrefix))
-            )
+                  .getHasChildren(isbnPrefixToRelative(groupPrefix)),
+            ),
           )
-        ).some((e) => e)
+        ).some((e) => e),
       );
     })();
   }, [groupPrefix, props.store.shaderUtil.shaderProgram.requiredTextures]);

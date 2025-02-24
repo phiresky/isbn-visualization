@@ -5,11 +5,11 @@ import { IsbnData, ProcessSingleZoom } from "..";
 import { IsbnRelative } from "../../../src/lib/util";
 import { ImageTiler } from "../ImageTiler";
 export const INPUT_FILENAME =
-  process.env.INPUT_BENC || `data/aa_isbn13_codes_20241204T185335Z.benc.zst`;
+  process.env.INPUT_BENC ?? `data/aa_isbn13_codes_20241204T185335Z.benc.zst`;
 
 export async function colorImageWithSparseIsbns(
   tiler: ImageTiler,
-  packedIsbnsBinary: Uint32Array
+  packedIsbnsBinary: Uint32Array,
 ): Promise<void> {
   const addcolor = [1, 1, 1] as [number, number, number];
 
@@ -50,7 +50,7 @@ export async function loadSparseDataToMemory(): Promise<IsbnData> {
         for (const [k, v] of Object.entries(isbnData)) {
           if (v.byteOffset !== 0) {
             throw new Error(
-              `packedIsbnsBinaryUint8 must be aligned to 0, is ${v.byteOffset}`
+              `packedIsbnsBinaryUint8 must be aligned to 0, is ${v.byteOffset}`,
             );
           }
           const packedIsbnsBinary = new Uint32Array(v.buffer);
@@ -62,7 +62,7 @@ export async function loadSparseDataToMemory(): Promise<IsbnData> {
 }
 
 export default async function singleSparse(
-  dataset: string
+  dataset: string,
 ): Promise<ProcessSingleZoom> {
   const data = await loadSparseDataToMemory();
   const dataa = data[dataset];

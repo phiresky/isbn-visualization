@@ -9,7 +9,7 @@ export class StatsCalculator {
   constructor(private store: Store) {}
   #getRanges(
     startPrefix: IsbnPrefixWithoutDashes,
-    endPrefix: IsbnPrefixWithoutDashes
+    endPrefix: IsbnPrefixWithoutDashes,
   ) {
     const components: string[] = [];
     function recurse(prefix: string, left: string, right: string) {
@@ -29,7 +29,7 @@ export class StatsCalculator {
       if (left.length === 1) components.push(prefix + leftDigit);
       else if (left.length > 1) recurse(prefix + leftDigit, left.slice(1), "9");
       for (let i = +leftDigit + 1; i < +rightDigit; i++) {
-        components.push(prefix + i);
+        components.push(prefix + String(i));
       }
       if (right.length === 1) components.push(prefix + rightDigit);
       else if (right.length > 1)
@@ -42,14 +42,14 @@ export class StatsCalculator {
   async #fetchStats(): Promise<StatsMap> {
     if (!this.#data) {
       this.#data = await fetchJson<StatsMap>(
-        `${this.store.runtimeConfig.jsonRoot}/stats.json`
+        `${this.store.runtimeConfig.jsonRoot}/stats.json`,
       );
     }
     return this.#data;
   }
   async getStats(
     startPrefix: IsbnPrefixWithoutDashes,
-    endPrefix: IsbnPrefixWithoutDashes
+    endPrefix: IsbnPrefixWithoutDashes,
   ) {
     const ranges = this.#getRanges(startPrefix, endPrefix);
     const stats = await this.#fetchStats();

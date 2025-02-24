@@ -20,7 +20,7 @@ export class TitleFetcher {
   >();
   constructor(private store: Store) {}
   async fetchTitle(
-    title: IsbnStrWithChecksum
+    title: IsbnStrWithChecksum,
   ): Promise<TitleFetchedInfo | undefined> {
     const prefixStr = title.slice(0, 8) as IsbnPrefixWithoutDashes;
     const fname = splitNameJson(prefixStr, 3);
@@ -28,15 +28,15 @@ export class TitleFetcher {
     let gotten = this.cache.get(prefixStr);
     if (!gotten) {
       gotten = fetchJson<TitleFetchedInfo[]>(
-        this.store.runtimeConfig.titlesRoot + "/" + fname
+        this.store.runtimeConfig.titlesRoot + "/" + fname,
       ).then(
         (data) =>
           new Map(
             data.map((info) => [
               String(info.isbn13) as IsbnStrWithChecksum,
               info,
-            ])
-          )
+            ]),
+          ),
       );
       this.cache.set(prefixStr, gotten);
     }

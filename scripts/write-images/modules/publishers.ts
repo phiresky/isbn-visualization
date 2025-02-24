@@ -13,7 +13,7 @@ import { ImageTiler } from "../ImageTiler";
 
 export async function processPublishersData(
   tiler: ImageTiler,
-  publishersData: LazyPrefixInfo
+  publishersData: LazyPrefixInfo,
 ): Promise<void> {
   let color: [number, number, number] | null = null;
   let curPrefixEnd = -1;
@@ -24,7 +24,7 @@ export async function processPublishersData(
   ) {
     if (relativeIsbn % 2e6 === 0) {
       console.log(
-        `Processing ${((relativeIsbn / totalIsbns) * 100).toFixed(2)}%...`
+        `Processing ${((relativeIsbn / totalIsbns) * 100).toFixed(2)}%...`,
       );
       await tiler.purgeToLength(1);
     }
@@ -33,7 +33,7 @@ export async function processPublishersData(
       const data = getGroupHierarchy(publishersData, isbn);
       if (typeof data === "function") {
         throw Error(
-          "found lazy data in full data dump from /data, this is impossible"
+          "found lazy data in full data dump from /data, this is impossible",
         );
       }
       if (data.outers.length >= 2) {
@@ -81,8 +81,8 @@ export async function loadPublishersData() {
     children: JSON.parse(
       await readFile(
         process.env.INPUT_PREFIX_DATA || `data/prefix-data.json`,
-        "utf8"
-      )
+        "utf8",
+      ),
     ) as InfoMap,
     totalChildren: 0,
   };

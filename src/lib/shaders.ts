@@ -253,7 +253,10 @@ void main() {
   fragColor = colorOfPixel(vUv);
 }`;
 
-type TypedUniforms = Record<UniformNames, { value: any }>;
+type TypedUniforms = Record<
+  UniformNames,
+  { value: number | boolean | THREE.Texture }
+>;
 export class ShaderUtil {
   constructor(private store: Store) {
     makeAutoObservable(this);
@@ -335,7 +338,7 @@ vec4 colorOfPixel(vec2 uv) {
     const cfg = this.store.runtimeConfig;
     const fragmentShader = makeFragmentShader(this.shaderColorFn).replace(
       /\$([a-z0-9_]+)/g,
-      (_, dataset) => {
+      (_, dataset: string) => {
         if (
           dataset === "dataset_publishers" &&
           cfg.publishersBrightness === 0 &&
@@ -350,22 +353,22 @@ vec4 colorOfPixel(vec2 uv) {
         ) {
           return `col7`; // fake / empty texture
         } else if (dataset === "first_dataset") {
-          return dataset === "dataset_publishers" ? `col1` : `col2`;
+          return cfg.dataset === "dataset_publishers" ? `col1` : `col2`;
         } else {
           requiredTextures.push(dataset.replace("dataset_", ""));
           return `col${requiredTextures.length}`;
         }
-      }
+      },
     );
     return { fragmentShader, requiredTextures };
   }
 
   async getIsbnShaderMaterial(
-    prefix: IsbnPrefixRelative
+    prefix: IsbnPrefixRelative,
   ): Promise<{ material: ShaderMaterial; refreshUniforms: () => void } | null> {
     const { requiredTextures, fragmentShader } = this.shaderProgram;
     const textures = await Promise.all(
-      requiredTextures.map((d) => this.store.imageLoader(d).getTexture(prefix))
+      requiredTextures.map((d) => this.store.imageLoader(d).getTexture(prefix)),
     );
     const gradientsTexture = await this.gradientsTexture;
     const isMaxZoom = prefix.length >= ImageLoader.maxZoomPrefixLength;
@@ -383,7 +386,7 @@ vec4 colorOfPixel(vec2 uv) {
         PUBLISHERS_COLOR_SCHEME: { value: 0 },
         gradients: { value: gradientsTexture },
         ...Object.fromEntries(
-          textures.map((_, i) => [`col${i + 1}`, { value: textures[i] }])
+          textures.map((_, i) => [`col${i + 1}`, { value: textures[i] }]),
         ),
         MIN_PUBLICATION_YEAR: { value: -1 },
         MAX_PUBLICATION_YEAR: { value: -1 },
@@ -417,8 +420,8 @@ void main() {
         unis.HIGHLIGHTED_PUBLISHER_PREFIX_LENGTH.value = publisherInfo
           ? removeDashes(publisherInfo.prefix).length - 2
           : 0;
-        unis.PUBLISHERS_COLOR_SCHEME.value = [, "hsl", "dark"].indexOf(
-          config.publishersColorSchema
+        unis.PUBLISHERS_COLOR_SCHEME.value = [undefined, "hsl", "dark"].indexOf(
+          config.publishersColorSchema,
         );
         unis.MIN_PUBLICATION_YEAR.value = config.filterMinimumPublicationYear;
         unis.MAX_PUBLICATION_YEAR.value = config.filterMaximumPublicationYear;

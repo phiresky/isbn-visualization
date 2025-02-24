@@ -55,11 +55,6 @@ interface BlockConfig {
   color?: string;
 }
 
-interface BlockClickEvent {
-  pos: IsbnPrefixRelative;
-  text: string;
-}
-
 interface MinimapSVGProps {
   blocks?: BlockConfig[];
   store: Store;
@@ -97,7 +92,7 @@ const MinimapSVG: React.FC<MinimapSVGProps> = observer(
       setOverlay(o: Overlay) {
         store.setView(
           (o.x + o.width / 2) * scale,
-          (o.y + o.height / 2) * scale
+          (o.y + o.height / 2) * scale,
         );
       },
       // Convert screen coordinates to SVG coordinates
@@ -141,11 +136,11 @@ const MinimapSVG: React.FC<MinimapSVGProps> = observer(
         const coords = this.getLocalCoordinates(event);
         const newX = Math.max(
           0,
-          Math.min(WIDTH - this.overlay.width, coords.x - this.dragStart.x)
+          Math.min(WIDTH - this.overlay.width, coords.x - this.dragStart.x),
         );
         const newY = Math.max(
           0,
-          Math.min(HEIGHT - this.overlay.height, coords.y - this.dragStart.y)
+          Math.min(HEIGHT - this.overlay.height, coords.y - this.dragStart.y),
         );
 
         this.setOverlay({
@@ -217,7 +212,7 @@ const MinimapSVG: React.FC<MinimapSVGProps> = observer(
                   height={overlay.height}
                   fill={`rgba(255,255,255,${Math.max(
                     0,
-                    Math.min(1, 1 - widthRatio)
+                    Math.min(1, 1 - widthRatio),
                   )})`}
                   stroke="#fff"
                   strokeWidth="0.5"
@@ -239,7 +234,7 @@ const MinimapSVG: React.FC<MinimapSVGProps> = observer(
         </Observer>
       </svg>
     );
-  }
+  },
 );
 
 // Helper to parse position string
@@ -260,7 +255,7 @@ const parsePosition = (pos: string) => {
     };
   }
   throw new Error(
-    "Position must be 2 digits for main blocks or 3 digits for XX blocks"
+    "Position must be 2 digits for main blocks or 3 digits for XX blocks",
   );
 };
 // Color generation
@@ -347,7 +342,7 @@ const RenderBlock: React.FC<{ block: BlockConfig; store: Store }> = observer(
             p.xStart + p.width / 2,
             p.yStart + p.height / 2,
             { 2: 2, 3: 0.9 * Math.sqrt(10) ** 2 }[pos.length] ?? 1,
-            1
+            1,
           );
         }}
         style={{ cursor: "pointer" }}
@@ -371,38 +366,38 @@ const RenderBlock: React.FC<{ block: BlockConfig; store: Store }> = observer(
         </text>
       </g>
     );
-  }
+  },
 );
 
-export const MiniMap: React.FC<{ store: Store }> = observer(function MiniMap(
-  props
-) {
-  return (
-    <div className="minimap">
-      <MinimapSVG store={props.store} />
-      {props.store.resetZoomButton && (
-        <button
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: "50%",
-            transform: "translateX(-50%)",
-            marginBottom: "0.5ex",
-            cursor: "pointer",
-          }}
-          onClick={() => {
-            props.store.resetZoomButton = false;
-            props.store.zoomAnimateTo(
-              props.store.projection.pixelWidth / 2,
-              props.store.projection.pixelHeight / 2,
-              1,
-              1
-            );
-          }}
-        >
-          <small>Reset Zoom</small>
-        </button>
-      )}
-    </div>
-  );
-});
+export const MiniMap: React.FC<{ store: Store }> = observer(
+  function MiniMap(props) {
+    return (
+      <div className="minimap">
+        <MinimapSVG store={props.store} />
+        {props.store.resetZoomButton && (
+          <button
+            style={{
+              position: "absolute",
+              bottom: 0,
+              left: "50%",
+              transform: "translateX(-50%)",
+              marginBottom: "0.5ex",
+              cursor: "pointer",
+            }}
+            onClick={() => {
+              props.store.resetZoomButton = false;
+              props.store.zoomAnimateTo(
+                props.store.projection.pixelWidth / 2,
+                props.store.projection.pixelHeight / 2,
+                1,
+                1,
+              );
+            }}
+          >
+            <small>Reset Zoom</small>
+          </button>
+        )}
+      </div>
+    );
+  },
+);

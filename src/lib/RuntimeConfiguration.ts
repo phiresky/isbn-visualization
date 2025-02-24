@@ -107,7 +107,7 @@ export function defaultRuntimeConfig(dataset: string): RuntimeConfiguration {
 export function loadRuntimeConfigFromURL(): RuntimeConfiguration {
   const url = new URLSearchParams(window.location.search);
   const base = defaultRuntimeConfig(
-    url.get("dataset") || defaultDataset
+    url.get("dataset") || defaultDataset,
   ) as Record<string, unknown>;
   for (const key in base) {
     const value = url.get(key);

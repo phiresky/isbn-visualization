@@ -22,7 +22,7 @@ interface JsonRecord {
       country_name: "New Zealand";
       isbns: [
         { isbn: IsbnPrefixWithDashes; isbn_type: "prefix" },
-        { isbn: "..."; isbn_type: "isbn13" }
+        { isbn: "..."; isbn_type: "isbn13" },
       ];
     };
   };
@@ -34,7 +34,7 @@ async function go() {
   const map: InfoMap = {};
   let recordCount = 0;
   for await (const line of createInterface(
-    createReadStream(fname).pipe(ZSTDDecompress())
+    createReadStream(fname).pipe(ZSTDDecompress()),
   )) {
     const obj = JSON.parse(line) as JsonRecord;
     if (recordCount % 100000 === 0) console.log(`${recordCount} records...`);
@@ -116,13 +116,13 @@ async function go() {
   }
   recurseAssignNumericIds(map);
   console.log(
-    `assigned ${nextPublisherId} publisher ids, ${nextGroupId} group ids`
+    `assigned ${nextPublisherId} publisher ids, ${nextGroupId} group ids`,
   );
 
   async function recurseOrRemoveAndWrite(
     layer: InfoMap,
     depth: number,
-    prefix: string
+    prefix: string,
   ): Promise<LazyInfoMap> {
     await mkdir(outDir, { recursive: true });
     if (depth >= maxDepth && Object.keys(layer).length) {
@@ -133,7 +133,7 @@ async function go() {
       const out: LazyInfoMap = {};
       for (const [digit, info] of Object.entries(layer) as [
         Digit,
-        PrefixInfo
+        PrefixInfo,
       ][]) {
         out[digit] = {
           ...info,
@@ -143,7 +143,7 @@ async function go() {
               : await recurseOrRemoveAndWrite(
                   info.children || {},
                   depth + 1,
-                  `${prefix}${digit}`
+                  `${prefix}${digit}`,
                 ),
         };
       }

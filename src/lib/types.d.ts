@@ -2,5 +2,5 @@ declare module "isbn3/lib/calculate_check_digit" {
   export default function calculateCheckDigit(isbn: string): string;
 }
 declare module "simple-zstd" {
-  export function ZSTDDecompress(): any;
+  export function ZSTDDecompress(): NodeJS.WritableStream;
 }

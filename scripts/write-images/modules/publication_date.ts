@@ -11,7 +11,7 @@ import { ImageTiler, StatsAggregator } from "../ImageTiler";
 
 export function loadPublicationDateData(
   dbName: string,
-  stats: StatsAggregator
+  stats: StatsAggregator,
 ) {
   const db = sqlite3(dbName);
   let i = 0;
@@ -36,11 +36,11 @@ export function loadPublicationDateData(
         "loading publication date data",
         ((row.oclc_number / maxOclcNumber) * 100).toFixed(1) + "%",
         i,
-        row
+        row,
       );
     // isbns.set(+row.isbn as Isbn13Number, row.oclc_number);
     const isbnRel = fullIsbnToRelative(
-      String(row.isbn13) as IsbnStrWithChecksum
+      String(row.isbn13) as IsbnStrWithChecksum,
     );
     if (isbnRel < 0 || isbnRel >= totalIsbns) {
       throw new Error(`invalid isbn: ${row.isbn13} ${isbnRel}`);
@@ -58,24 +58,24 @@ export function loadPublicationDateData(
 }
 
 export default async function rarityModule(
-  stats: StatsAggregator
+  stats: StatsAggregator,
 ): Promise<ProcessSingleZoom> {
   const dataset = loadPublicationDateData(
     process.env.INPUT_HOLDING_SQLITE || "data/library_holding_data.sqlite3",
-    stats
+    stats,
   );
   return (tiler) => processPublicationData(tiler, dataset);
 }
 async function processPublicationData(
   tiler: ImageTiler,
-  dataset: Uint8Array
+  dataset: Uint8Array,
 ): Promise<void> {
   tiler.postprocessPixels = postprocessPixels;
   for (let i = 0; i < totalIsbns; i++) {
     const relativeIsbn = i as IsbnRelative;
     if (relativeIsbn % 2e6 === 0) {
       console.log(
-        `Processing ${((relativeIsbn / totalIsbns) * 100).toFixed(2)}%...`
+        `Processing ${((relativeIsbn / totalIsbns) * 100).toFixed(2)}%...`,
       );
       await tiler.purgeToLength(1);
     }

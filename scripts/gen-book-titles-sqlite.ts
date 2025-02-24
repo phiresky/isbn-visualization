@@ -32,13 +32,13 @@ async function connect(dbName: string) {
   db.prepare("PRAGMA synchronous = OFF").run();
   // create table isbns (isbn13, book_id), books (book_id, publisher, author, title)
   db.prepare(
-    "CREATE TABLE IF NOT EXISTS books (book_id INTEGER PRIMARY KEY, publisher TEXT, author TEXT, title TEXT)"
+    "CREATE TABLE IF NOT EXISTS books (book_id INTEGER PRIMARY KEY, publisher TEXT, author TEXT, title TEXT)",
   ).run();
   db.prepare(
-    "CREATE UNIQUE INDEX IF NOT EXISTS idx_books_publisher_author_title ON books (publisher, author, title)"
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_books_publisher_author_title ON books (publisher, author, title)",
   ).run();
   db.prepare(
-    "CREATE TABLE IF NOT EXISTS isbns (isbn13 INTEGER, book_id INTEGER REFERENCES books(book_id), primary key (isbn13, book_id))"
+    "CREATE TABLE IF NOT EXISTS isbns (isbn13 INTEGER, book_id INTEGER REFERENCES books(book_id), primary key (isbn13, book_id))",
   ).run();
   return db;
 }
@@ -47,7 +47,7 @@ async function load(dbName: string, dataDir: string) {
   const db = await connect(dbName);
   // readdir, find all dataDir/aarecords__*.json.gz
   const files = (await fs.readdir(dataDir)).filter((f) =>
-    /^aarecords__[^.]+\.json\.gz$/.exec(f)
+    /^aarecords__[^.]+\.json\.gz$/.exec(f),
   );
   for (const file of files) {
     console.log(`Loading ${file}`);
@@ -60,10 +60,10 @@ async function load(dbName: string, dataDir: string) {
     });
     // insert or return id
     const book = db.prepare<[string, string, string], { book_id: number }>(
-      "INSERT INTO books (publisher, author, title) VALUES (?, ?, ?) ON CONFLICT (publisher, author, title) DO UPDATE SET publisher = excluded.publisher RETURNING book_id"
+      "INSERT INTO books (publisher, author, title) VALUES (?, ?, ?) ON CONFLICT (publisher, author, title) DO UPDATE SET publisher = excluded.publisher RETURNING book_id",
     );
     const isbns = db.prepare(
-      "INSERT OR IGNORE INTO isbns (isbn13, book_id) VALUES (?, ?)"
+      "INSERT OR IGNORE INTO isbns (isbn13, book_id) VALUES (?, ?)",
     );
     db.exec("BEGIN TRANSACTION");
     for await (const line of rl) {

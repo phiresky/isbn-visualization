@@ -7,8 +7,8 @@ import { Store } from "./Store";
 declare module "react-select/base" {
   export interface Props<
     Option,
-    IsMulti extends boolean,
-    Group extends GroupBase<Option>
+    _IsMulti extends boolean,
+    _Group extends GroupBase<Option>,
   > {
     store: Store;
   }

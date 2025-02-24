@@ -23,10 +23,10 @@ export const Controls: React.FC<{ store: Store }> = observer(function Controls({
       fromPromise(
         store.statsCalculator.getStats(
           "978" as IsbnPrefixWithoutDashes,
-          "979" as IsbnPrefixWithoutDashes
-        )
+          "979" as IsbnPrefixWithoutDashes,
+        ),
       ),
-    []
+    [],
   );
   return (
     <div className={`controls ${state.showSettings ? "advanced" : ""}`}>
@@ -70,7 +70,7 @@ export const Controls: React.FC<{ store: Store }> = observer(function Controls({
             <LoadProgress store={store} /> Preset:{" "}
             {(() => {
               const ds = staticConfig.datasetOptions.find(
-                (e) => e.id === store.runtimeConfig.dataset
+                (e) => e.id === store.runtimeConfig.dataset,
               );
               if (!ds) return null;
               return (
@@ -214,8 +214,8 @@ const MainStuff: React.FC<{ store: Store }> = observer(function MainStuff({
               (e) =>
                 e.volumeInfo.title &&
                 e.volumeInfo.industryIdentifiers?.some(
-                  (i) => i.type === "ISBN_13"
-                )
+                  (i) => i.type === "ISBN_13",
+                ),
             );
           }}
           defaultOptions={config.exampleBooks}
@@ -226,7 +226,7 @@ const MainStuff: React.FC<{ store: Store }> = observer(function MainStuff({
           onChange={(e) => {
             console.log("found book", e);
             const isbn13 = e?.volumeInfo.industryIdentifiers?.find(
-              (i) => i.type === "ISBN_13"
+              (i) => i.type === "ISBN_13",
             )?.identifier;
             if (!isbn13) throw Error("no isbn13");
             store.updateHighlightedIsbn(isbn13);

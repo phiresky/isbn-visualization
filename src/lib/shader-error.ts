@@ -17,10 +17,12 @@ function handleSource(string: string, errorLine: number) {
 function getShaderErrors(
   gl: WebGLRenderingContext,
   shader: WebGLShader,
-  type: string
+  type: string,
 ) {
-  const status = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
-  const errors = gl.getShaderInfoLog(shader)!.trim();
+  const status = gl.getShaderParameter(shader, gl.COMPILE_STATUS) as string;
+  const log = gl.getShaderInfoLog(shader);
+  if (!log) return "";
+  const errors = log.trim();
 
   if (status && errors === "") return "";
 
@@ -28,14 +30,15 @@ function getShaderErrors(
   if (errorMatches) {
     // --enable-privileged-webgl-extension
     // console.log( '**' + type + '**', gl.getExtension( 'WEBGL_debug_shaders' ).getTranslatedShaderSource( shader ) );
-
+    const source = gl.getShaderSource(shader);
+    if (!source) return errors;
     const errorLine = parseInt(errorMatches[1]);
     return (
       type.toUpperCase() +
       "\n\n" +
       errors +
       "\n\n" +
-      handleSource(gl.getShaderSource(shader)!, errorLine)
+      handleSource(source, errorLine)
     );
   } else {
     return errors;
@@ -46,21 +49,21 @@ export const shaderErrorToString = (
   gl: WebGLRenderingContext,
   program: WebGLProgram,
   glVertexShader: WebGLShader,
-  glFragmentShader: WebGLShader
+  glFragmentShader: WebGLShader,
 ) => {
-  const programLog = gl.getProgramInfoLog(program)!.trim();
+  const programLog = gl.getProgramInfoLog(program)?.trim();
   const vertexErrors = getShaderErrors(gl, glVertexShader, "vertex");
   const fragmentErrors = getShaderErrors(gl, glFragmentShader, "fragment");
 
   const err =
     "THREE.WebGLProgram: Shader Error " +
-    gl.getError() +
+    String(gl.getError()) +
     " - " +
     "VALIDATE_STATUS " +
-    gl.getProgramParameter(program, gl.VALIDATE_STATUS) +
+    String(gl.getProgramParameter(program, gl.VALIDATE_STATUS)) +
     "\n\n" +
     "Program Info Log: " +
-    programLog +
+    String(programLog) +
     "\n" +
     vertexErrors +
     "\n" +

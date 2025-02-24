@@ -21,7 +21,7 @@ export type ProcessSingleZoom = (tiler: ImageTiler) => Promise<void>;
 async function processAllZoomLevels(
   dataset: string,
   minLevel = 1,
-  maxLevel = 4
+  maxLevel = 4,
 ): Promise<void> {
   const stats = new StatsAggregator();
   const processIsbnData = await loadData(dataset, stats);
@@ -41,7 +41,7 @@ async function processAllZoomLevels(
     if (level === minLevel) {
       await writeFile(
         `${dir}/stats.json`,
-        JSON.stringify(Object.fromEntries(stats.statistics))
+        JSON.stringify(Object.fromEntries(stats.statistics)),
       );
     }
   }
@@ -53,7 +53,7 @@ async function processAllZoomLevels(
 const specialDatasets = ["publishers", "all", "rarity", "publication_date"];
 async function loadData(
   dataset: string,
-  stats: StatsAggregator
+  stats: StatsAggregator,
 ): Promise<ProcessSingleZoom> {
   if (dataset === "publishers") {
     return await modules.publishers();

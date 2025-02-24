@@ -39,7 +39,7 @@ export function loadPublicationDateData(dbName: string) {
           creator: string | null;
         }
       >(
-        "select isbn13,title as title, creator as creator from isbn_data where isbn13 >= ? and isbn13 < ? group by isbn13 order by isbn13"
+        "select isbn13,title as title, creator as creator from isbn_data where isbn13 >= ? and isbn13 < ? group by isbn13 order by isbn13",
       )
       .all(+first as Isbn13Number, +next as Isbn13Number);
     for (const row of rows) {
@@ -52,8 +52,8 @@ export function loadPublicationDateData(dbName: string) {
     if (isbn % 1000000 === 0)
       console.log(
         `loading range ${first}, done: ${((isbn / totalIsbns) * 100).toFixed(
-          1
-        )}%`
+          1,
+        )}%`,
       );
     if (rows.length === 0) continue;
     const prefixStr = first.slice(0, prefixLength);

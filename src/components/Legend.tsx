@@ -8,7 +8,7 @@ import { defaultColorSchemeMeaning } from "../config";
 import { Store } from "../lib/Store";
 export const gradientsPngUrl = new URL(
   "../assets/gradients.png",
-  import.meta.url
+  import.meta.url,
 ).toString();
 const w = 230;
 const h = 20;
@@ -19,35 +19,35 @@ const options = Array.from({ length: totalGradientsInPng })
   }))
   .filter((e) => e.value !== 1);
 
-export const Legend: React.FC<{ store: Store }> = observer(function Legend(
-  props
-) {
-  const dataset = props.store.currentDataset;
-  let meaning = dataset.colorSchemeMeaning;
-  if (meaning === null) return;
-  meaning ??= defaultColorSchemeMeaning;
+export const Legend: React.FC<{ store: Store }> = observer(
+  function Legend(props) {
+    const dataset = props.store.currentDataset;
+    let meaning = dataset.colorSchemeMeaning;
+    if (meaning === null) return;
+    meaning ??= defaultColorSchemeMeaning;
 
-  return (
-    <div>
-      <Select<{ value: number }>
-        isSearchable={false}
-        value={options.find(
-          (o) => o.value === props.store.runtimeConfig.colorGradient
-        )}
-        getOptionValue={(e) => e.value.toString()}
-        onChange={(e) => {
-          if (e) props.store.runtimeConfig.colorGradient = e.value;
-        }}
-        options={options}
-        components={{
-          Option: ColorGradientOption,
-          SingleValue: ColorGradientSingleValue,
-        }}
-        store={props.store}
-      />
-    </div>
-  );
-});
+    return (
+      <div>
+        <Select<{ value: number }>
+          isSearchable={false}
+          value={options.find(
+            (o) => o.value === props.store.runtimeConfig.colorGradient,
+          )}
+          getOptionValue={(e) => e.value.toString()}
+          onChange={(e) => {
+            if (e) props.store.runtimeConfig.colorGradient = e.value;
+          }}
+          options={options}
+          components={{
+            Option: ColorGradientOption,
+            SingleValue: ColorGradientSingleValue,
+          }}
+          store={props.store}
+        />
+      </div>
+    );
+  },
+);
 
 const ColorGradientOption: React.FC<OptionProps<{ value: number }>> = (p) => {
   return (

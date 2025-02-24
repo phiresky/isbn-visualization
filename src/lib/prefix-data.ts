@@ -24,13 +24,13 @@ for (let x = 1; x <= 10; x++) {
       prefix: `978-${String(i).padStart(x, "0")}` as IsbnPrefixWithDashes,
       source: "publisher-ranges" as const,
       name: "test",
-    }))
+    })),
   );
 }
 
 export async function resolveOnePrefixLevel(
   prefix: LazyPrefixInfo,
-  fetchRoot: string
+  fetchRoot: string,
 ): Promise<{ children?: InfoMap; info?: PrefixInfoData[] }> {
   if (prefix.children && "lazy" in prefix.children) {
     if (typeof prefix.children.lazy === "string") {
@@ -50,7 +50,7 @@ export function addIsbnGroups(
   {
     testMode = false,
     addUnassigned,
-  }: { testMode: boolean; addUnassigned: boolean }
+  }: { testMode: boolean; addUnassigned: boolean },
 ) {
   if (testMode) {
     // empty
@@ -60,7 +60,7 @@ export function addIsbnGroups(
   }
   for (const [prefix, group] of Object.entries(isbnlib.groups) as [
     IsbnPrefixWithDashes,
-    (typeof isbnlib.groups)[string]
+    (typeof isbnlib.groups)[string],
   ][]) {
     addRecord(prefixData, prefix, {
       ...group,
@@ -89,7 +89,7 @@ export function addIsbnGroups(
       if (
         !getGroup(rootPrefixInfo, prefix) &&
         !digits.some((e) =>
-          getGroup(rootPrefixInfo, (prefix + e) as IsbnPrefixWithDashes)
+          getGroup(rootPrefixInfo, (prefix + e) as IsbnPrefixWithDashes),
         )
       ) {
         addRecord(prefixData, prefix, {
@@ -109,7 +109,7 @@ export interface LazyPrefixInfoWithParents {
 export function getGroupHierarchy(
   rootPrefixInfo: LazyPrefixInfo,
   prefix: IsbnPrefixWithDashes | IsbnPrefixWithoutDashes,
-  allowFetch = true
+  allowFetch = true,
 ):
   | LazyPrefixInfoWithParents
   | ((prefixRoot: string) => Promise<LazyPrefixInfoWithParents>) {
@@ -140,7 +140,7 @@ export function getGroupHierarchy(
 }
 export function getGroup(
   rootPrefixInfo: LazyPrefixInfo,
-  prefix: IsbnPrefixWithDashes
+  prefix: IsbnPrefixWithDashes,
 ):
   | LazyPrefixInfo
   | null

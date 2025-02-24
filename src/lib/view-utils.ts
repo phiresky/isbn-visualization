@@ -13,7 +13,7 @@ export type ViewParams2 = ViewParams | "visible" | "invisible";
 export function getPlanePosition(
   config: ProjectionConfig,
   isbnStart: IsbnRelative,
-  isbnEnd: IsbnRelative
+  isbnEnd: IsbnRelative,
 ) {
   const { x: xStart, y: yStart } = config.relativeIsbnToCoords(isbnStart);
   const end = config.relativeIsbnToCoords(isbnEnd);
@@ -25,7 +25,7 @@ export function getPlanePosition(
   const position = [xStart + width / 2, -(yStart + height / 2), 0] as [
     number,
     number,
-    number
+    number,
   ];
   return { xStart, yStart, xEnd, yEnd, position, width, height };
 }
@@ -36,7 +36,7 @@ export function simplifyView(
     yStart: number;
     xEnd: number;
     yEnd: number;
-  }
+  },
 ): ViewParams2 {
   if (view === "visible") return "visible";
   if (view === "invisible") return "invisible";

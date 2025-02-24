@@ -5,7 +5,7 @@ import { IsbnPrefixWithoutDashes } from "../src/lib/util";
 const out: StatsMap = {};
 for (const dataset of ["all", "publication_date", "rarity", "publishers"]) {
   const f = JSON.parse(
-    readFileSync(`public/images/tiled/${dataset}/stats.json`, "utf-8")
+    readFileSync(`public/images/tiled/${dataset}/stats.json`, "utf-8"),
   ) as StatsMap;
   for (const k of Object.keys(f) as IsbnPrefixWithoutDashes[]) {
     if (out[k]) mergeStats(out[k], f[k]!);
