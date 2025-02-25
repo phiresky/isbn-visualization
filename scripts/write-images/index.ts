@@ -26,7 +26,7 @@ async function processAllZoomLevels(
   const stats = new StatsAggregator();
   const processIsbnData = await loadData(dataset, stats);
   const written = [];
-  const dir = `public/images/tiled/${dataset}`;
+  const dir = `${process.env.OUTPUT_DIR_PUBLIC ?? "public"}/images/tiled/${dataset}`;
   for (let level = minLevel; level <= maxLevel; level++) {
     const tiledDir = `${dir}/zoom-${level}`;
     const tiler = new ImageTiler(level, tiledDir);

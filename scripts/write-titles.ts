@@ -53,10 +53,13 @@ export function loadPublicationDateData(dbName: string) {
     if (rows.length === 0) continue;
     const prefixStr = first.slice(0, prefixLength);
     const fname =
-      `public/title-data/` + splitNameJson(prefixStr, dirSegmentLength);
+      `${process.env.OUTPUT_DIR_PUBLIC ?? "public"}/title-data/` +
+      splitNameJson(prefixStr, dirSegmentLength);
     mkdirSync(path.dirname(fname), { recursive: true });
     writeFileSync(fname, JSON.stringify(rows));
   }
 }
 
-loadPublicationDateData("data/library_holding_data.sqlite3");
+loadPublicationDateData(
+  `${process.env.DATA_DIR ?? "data"}/library_holding_data.sqlite3`,
+);

@@ -5,7 +5,8 @@ import { IsbnData, ProcessSingleZoom } from "..";
 import { IsbnRelative } from "../../../src/lib/util";
 import { ImageTiler } from "../ImageTiler";
 export const INPUT_FILENAME =
-  process.env.INPUT_BENC ?? `data/aa_isbn13_codes_20241204T185335Z.benc.zst`;
+  process.env.INPUT_BENC ??
+  `${process.env.DATA_DIR ?? "data"}/aa_isbn13_codes_20241204T185335Z.benc.zst`;
 
 export async function colorImageWithSparseIsbns(
   tiler: ImageTiler,

@@ -23,9 +23,7 @@ export async function processPublishersData(
     relativeIsbn++
   ) {
     if (relativeIsbn % 2e6 === 0) {
-      console.log(
-        `Processing ${((relativeIsbn / totalIsbns) * 100).toFixed(2)}%...`,
-      );
+      tiler.logProgress(relativeIsbn / totalIsbns);
       await tiler.purgeToLength(1);
     }
     if (relativeIsbn > curPrefixEnd) {

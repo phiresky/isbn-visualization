@@ -64,6 +64,11 @@ export class ImageTiler {
       totalIsbns / this.config.pixelWidth / this.config.pixelHeight;
     console.log(`total books per pixel: ${this.totalBooksPerPixel}`);
   }
+  logProgress(progress: number) {
+    console.log(
+      `Progress for ${this.tiledDir}: ${(progress * 100).toFixed(2)}%...`,
+    );
+  }
   async init() {
     console.log(`Generating ${this.tiledDir}...`);
     await mkdir(this.tiledDir, { recursive: true });

@@ -42,7 +42,7 @@ jobs:
       - name: Build
         run: pnpm run build
         env:
-          BASE_PATH: /isbn-visualization
+          PUBLIC_BASE_PATH: /isbn-visualization
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact

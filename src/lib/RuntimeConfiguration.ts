@@ -89,15 +89,16 @@ export function defaultRuntimeConfig(dataset: string): RuntimeConfiguration {
     imagesRoot:
       window.origin === "https://phiresky.github.io"
         ? "/isbn-visualization-images/tiled"
-        : "/images/tiled",
+        : import.meta.env.BASE_URL + "/images/tiled",
     jsonRoot:
       window.origin === "https://phiresky.github.io"
         ? "/isbn-visualization-json/prefix-data"
-        : "/prefix-data",
+        : import.meta.env.BASE_URL + "/prefix-data",
     titlesRoot:
-      // window.origin === "https://phiresky.github.io" ?
-      "https://isbn-titles.phiresky.xyz",
-    //: "/title-data",
+      window.origin === "https://phiresky.github.io" ||
+      window.location.hostname === "localhost"
+        ? "https://isbn-titles.phiresky.xyz"
+        : import.meta.env.BASE_URL + "/title-data",
 
     ...(isMobile() ? mobile : {}),
     ...ds?.runtimeConfig,

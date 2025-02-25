@@ -14,5 +14,5 @@
     "skipLibCheck": true,
     "checkJs": true
   },
-  "exclude": ["scripts/rarity", "node_modules/**", "data", "dist"]
+  "exclude": ["scripts/rarity", "node_modules/**", "data", "dist", "public"]
 }

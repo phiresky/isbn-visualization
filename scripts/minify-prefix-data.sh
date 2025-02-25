@@ -1,18 +1,20 @@
 #!/bin/bash
 set -euo pipefail
 
-N=$(nproc)
+JOBS="${JOBS:-$(nproc)}"
 
-echo compressing files in public/prefix-data with zopfli using $N threads
-for f in public/prefix-data/*.json; do
+OUTPUT_DIR_PUBLIC="${OUTPUT_DIR_PUBLIC:-public}"
+
+echo compressing files in $OUTPUT_DIR_PUBLIC/prefix-data with zopfli using $JOBS threads
+for f in $OUTPUT_DIR_PUBLIC/prefix-data/*.json; do
     (
         # .. do your stuff here
-        echo "starting task $f.."
+        echo "zopfli $f.."
         zopfli "$f" && rm "$f"
     ) &
 
     # allow to execute up to $N jobs in parallel
-    while [[ $(jobs -r -p | wc -l) -ge $N ]]; do
+    while [[ $(jobs -r -p | wc -l) -ge $JOBS ]]; do
         # now there are $N jobs already running, so wait here for any job
         # to be finished so there is a place to start next one.
         wait -n

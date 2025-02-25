@@ -265,9 +265,10 @@ fn setup_database(conn: &Connection) -> rusqlite::Result<()> {
 fn main() -> io::Result<()> {
     let args: Vec<String> = std::env::args().collect();
     let fname = args.get(1).expect("no input filename provided");
-
+    // output env var DATA_DIR
+    let out_dir = std::env::var("DATA_DIR").unwrap_or_else(|_| "../../data".to_string());
     // Initialize SQLite database
-    let conn = Connection::open("../../data/library_holding_data.sqlite3")
+    let conn = Connection::open(format!("{}/library_holding_data.sqlite3", out_dir))
         .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
     setup_database(&conn).map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
 

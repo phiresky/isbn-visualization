@@ -41,6 +41,42 @@ cd dist && python3 -m http.server
 
 This repo contains a few scripts to generate the relevant data for the web viewer.
 
+### Running in docker
+
+You can build a docker container containing all relevant code using
+
+```bash
+docker build -t phiresky/isbn-visualization .
+```
+
+### `scripts/process-all.sh`
+
+A convenience script to run the JS build and all processing steps that have not been run yet:
+
+Inputs:
+
+- PUBLIC_BASE_PATH: the url prefix you will host the project under (e.g. /isbn-visualization)
+- DATA_DIR: the directory the input data files are in and intermediary products will be stored
+- OUTPUT_DIR_PUBLIC: the output dir that you will host on your webhost (under PUBLIC_BASE_PATH)
+
+Run in docker:
+
+```bash
+docker run --rm -it \
+    -e PUBLIC_BASE_PATH=/isbn-visualization \
+    -e DATA_DIR=/data \
+    -e OUTPUT_DIR_PUBLIC=/public phiresky/isbn-visualization \
+    -v ./data:/data \
+    -v ./public:/public \
+    phiresky/isbn-visualization
+```
+
+Directly:
+
+```
+PUBLIC_BASE_PATH=/ OUTPUT_DIR_PUBLIC=./public DATA_DIR=./data ./scripts/process-all.sh
+```
+
 ### `scripts/gen-prefixes.ts`
 
 This script generates the json files representing the groups/publisher ranges.
@@ -181,7 +217,7 @@ You can use the following debug objects exposed in the dev console:
 
 Builds the app for production to the `dist` folder.<br>
 It bundles the project in production mode and optimizes the build for the best performance.
-If the app should not be hosted in the root path of a domain, set the env var e.g. `BASE_PATH=/isbn-visualization`.
+If the app should not be hosted in the root path of a domain, set the env var e.g. `PUBLIC_BASE_PATH=/isbn-visualization`.
 
 ### Deployment
 

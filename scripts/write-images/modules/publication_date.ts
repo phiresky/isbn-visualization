@@ -74,9 +74,7 @@ async function processPublicationData(
   for (let i = 0; i < totalIsbns; i++) {
     const relativeIsbn = i as IsbnRelative;
     if (relativeIsbn % 2e6 === 0) {
-      console.log(
-        `Processing ${((relativeIsbn / totalIsbns) * 100).toFixed(2)}%...`,
-      );
+      tiler.logProgress(relativeIsbn / totalIsbns);
       await tiler.purgeToLength(1);
     }
     const publicationDate = dataset[i]; // - 1800

@@ -37,7 +37,8 @@ async function go() {
     createReadStream(fname).pipe(ZSTDDecompress()),
   )) {
     const obj = JSON.parse(line) as JsonRecord;
-    if (recordCount % 100000 === 0) console.log(`${recordCount} records...`);
+    if (recordCount % 100000 === 0)
+      console.log(`${recordCount}/2700000 records...`);
     recordCount++;
     for (const isbn of obj.metadata.record.isbns) {
       if (isbn.isbn_type === "prefix") {
@@ -61,8 +62,8 @@ async function go() {
   });
   const maxDepth = 7;
   const maxInlineDeepChildren = 10;
-  const outDir = "public/prefix-data";
-  const outFileFull = `data/prefix-data.json`;
+  const outDir = (process.env.OUTPUT_DIR_PUBLIC ?? "public") + "/prefix-data";
+  const outFileFull = (process.env.DATA_DIR ?? "data") + "/prefix-data.json";
 
   let nextPublisherId = 1;
   let nextGroupId = 1;
@@ -148,8 +149,10 @@ async function go() {
     }
   }
   await writeFile(outFileFull, JSON.stringify(map));
+  console.log(`wrote ${recordCount} records to ${outFileFull}`);
   const lazyMap = await recurseOrRemoveAndWrite(map, 0, "");
   await writeFile(`${outDir}/root.json`, JSON.stringify(lazyMap));
+  console.log(`wrote lazy map to ${outDir}/root.json`);
 }
 
 void go();
