@@ -65,7 +65,7 @@ Run in docker:
 docker run --rm -it \
     -e PUBLIC_BASE_PATH=/isbn-visualization \
     -e DATA_DIR=/data \
-    -e OUTPUT_DIR_PUBLIC=/public phiresky/isbn-visualization \
+    -e OUTPUT_DIR_PUBLIC=/public \
     -v ./data:/data \
     -v ./public:/public \
     phiresky/isbn-visualization
