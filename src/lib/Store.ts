@@ -330,14 +330,14 @@ export class Store {
     const targetY = y + (height * 3) / 4;
     this.zoomAnimateTo(targetX, targetY, 14000, 7);
   }
-  setView(targetX: number, targetY: number) {
+  setView(targetX: number, targetY: number, zoom?: number) {
     targetX -= this.projection.pixelWidth / 2;
     targetY = this.projection.pixelHeight / 2 - targetY;
     const camera = this.camera;
     if (!camera) return;
     camera.position.x = targetX;
     camera.position.y = targetY;
-    // if (position.zoom) camera.zoom = position.zoom;
+    if (zoom) camera.zoom = zoom;
     if (!this.orbitControls) return;
     this.orbitControls.target.x = camera.position.x;
     this.orbitControls.target.y = camera.position.y;

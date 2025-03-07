@@ -55,6 +55,9 @@ export interface RuntimeConfiguration {
   titlesRoot: string;
 }
 
+let baseUrl = import.meta.env.BASE_URL;
+if (baseUrl === "/") baseUrl = "";
+
 const defaultDataset = "publication_date";
 function isMobile() {
   const minWidth = 768; // Minimum width for desktop devices
@@ -89,16 +92,16 @@ export function defaultRuntimeConfig(dataset: string): RuntimeConfiguration {
     imagesRoot:
       window.origin === "https://phiresky.github.io"
         ? "/isbn-visualization-images/tiled"
-        : import.meta.env.BASE_URL + "/images/tiled",
+        : baseUrl + "/images/tiled",
     jsonRoot:
       window.origin === "https://phiresky.github.io"
         ? "/isbn-visualization-json/prefix-data"
-        : import.meta.env.BASE_URL + "/prefix-data",
+        : baseUrl + "/prefix-data",
     titlesRoot:
       window.origin === "https://phiresky.github.io" ||
       window.location.hostname === "localhost"
         ? "https://isbn-titles.phiresky.xyz"
-        : import.meta.env.BASE_URL + "/title-data",
+        : baseUrl + "/title-data",
 
     ...(isMobile() ? mobile : {}),
     ...ds?.runtimeConfig,
